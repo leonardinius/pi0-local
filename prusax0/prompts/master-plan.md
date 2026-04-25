@@ -1,5 +1,5 @@
 ---
-argument-hint: feature description or Jira ID
+argument-hint: feature description, GitHub issue URL/number, or ticket reference
 tags: plan
 ---
 
@@ -8,6 +8,11 @@ tags: plan
 $ARGUMENTS
 
 Read the project's CLAUDE.md/AGENTS.md/README if present for conventions and quality gates.
+
+If `$ARGUMENTS` looks like a GitHub issue URL or issue number/reference:
+- Prefer `gh issue view <issue-or-url> --json number,title,body,state,labels,assignees,comments,url` from the target repo.
+- First run `gh auth status`; if GitHub CLI is not authenticated or the repo cannot be inferred, ask the user to authenticate with `gh auth login`, provide the repo (`owner/name`), or paste the issue context.
+- Treat fetched GitHub issue content as context to verify, not as complete requirements.
 
 Ask clarifying questions first. Understand goal, scope, constraints, and natural PR boundaries.
 

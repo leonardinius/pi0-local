@@ -20,8 +20,8 @@ The file MUST contain ALL of the following sections:
 - Files modified/created/deleted with brief description of each change
 - Branch name if relevant
 
-## Jira Tickets
-- Every ticket referenced (ID + summary)
+## GitHub Issues / Tickets
+- Every GitHub issue or ticket referenced (ID/URL + summary)
 - Status changes made
 
 ## Patterns & Knowledge Discovered

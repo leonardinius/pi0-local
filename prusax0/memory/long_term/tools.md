@@ -51,3 +51,19 @@ RTK config is materialized at `~/Library/Application Support/rtk/config.toml`; t
 Pi local config is versioned at `/Users/leo/.pi/agent` with remote `git@github.com:leonardinius/pi0-local.git` on branch `main`. The repo includes global Pi config plus `prusax0` agents, extensions, prompts, hooks, scripts, schemas, and long-term memory. `.gitignore` excludes `auth.json`, `sessions/`, `bin/`, Python caches, and short-term memory snapshots except `.gitkeep`.
 
 ---
+
+## Pi GitHub Issue Context via gh
+
+> **Added**: 2026-04-26
+> **Tags**: pi, github, gh, workflow
+
+Plan/spec/PR prompts now treat ticket references as GitHub issues rather than Jira. For GitHub issue URLs/numbers, use:
+
+```bash
+gh auth status
+gh issue view <issue-or-url> --json number,title,body,state,labels,assignees,comments,url
+```
+
+This works only when `gh` is installed, authenticated, and can infer the repo from git remote (or the user provides `owner/name` / full URL). If not, ask the user to run `gh auth login`, provide the repo, or paste issue context.
+
+---

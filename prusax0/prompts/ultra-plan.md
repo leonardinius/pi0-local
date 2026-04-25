@@ -1,5 +1,5 @@
 ---
-argument-hint: feature description or Jira ID
+argument-hint: feature description, GitHub issue URL/number, or ticket reference
 tags: plan, orchestrate
 ---
 
@@ -7,7 +7,14 @@ tags: plan, orchestrate
 
 $ARGUMENTS
 
-Read the project's CLAUDE.md/AGENTS.md/README if present. Before asking questions, grep `/Users/leo/.pi/agent/prusax0/memory/long_term/*.md` for significant keywords from the request and read only matching `## ... ---` blocks. Carry relevant findings into sub-plans as `## Prior knowledge`.
+Read the project's CLAUDE.md/AGENTS.md/README if present.
+
+If `$ARGUMENTS` looks like a GitHub issue URL or issue number/reference:
+- Prefer `gh issue view <issue-or-url> --json number,title,body,state,labels,assignees,comments,url` from the target repo.
+- First run `gh auth status`; if GitHub CLI is not authenticated or the repo cannot be inferred, ask the user to authenticate with `gh auth login`, provide the repo (`owner/name`), or paste the issue context.
+- Treat fetched GitHub issue content as context to verify, not as complete requirements.
+
+Before asking questions, grep `/Users/leo/.pi/agent/prusax0/memory/long_term/*.md` for significant keywords from the request and read only matching `## ... ---` blocks. Carry relevant findings into sub-plans as `## Prior knowledge`.
 
 Ask clarifying questions before writing anything. For non-obvious design decisions, present options/trade-offs and ask whether to proceed with the recommendation. After each round, ask: "Continue questions" or "Finalize spec".
 
