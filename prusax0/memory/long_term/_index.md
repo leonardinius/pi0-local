@@ -1,7 +1,7 @@
 # Knowledge Cache Index
 
 > **Last updated**: 2026-04-26
-> **Total entries**: 4
+> **Total entries**: 5
 
 ## Category Files
 
@@ -10,13 +10,13 @@
 | `queries.md` | 0 | — | Working SQL, BigQuery, PromQL, JQL, CQL queries |
 | `runbooks.md` | 0 | — | Incident resolution, debugging procedures, operational workflows |
 | `investigations.md` | 1 | 2026-04-26 | Research results, deep-dive findings, codebase explorations |
-| `patterns.md` | 0 | — | Code patterns, conventions, architecture decisions |
+| `patterns.md` | 1 | 2026-04-26 | Code patterns, conventions, architecture decisions |
 | `services.md` | 0 | — | Per-service gotchas, configs, quirks |
 | `tools.md` | 3 | 2026-04-26 | CLI commands, deployment workflows, useful shortcuts |
 
 ## Tag Cloud
 
-backup, config, extension, git, openai, pi, rtk, subagents, token-savings, workflow
+backup, config, extension, git, hooks, memory, openai, pi, rtk, subagents, token-savings, workflow
 
 ## Quick Lookup
 
