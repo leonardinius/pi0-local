@@ -1,0 +1,61 @@
+---
+argument-hint: feature description or Jira ID
+tags: plan, orchestrate
+---
+
+> **Pi/OpenAI subagents**: This workflow creates plans for the installed `architect → coder → refactorer → reviewer` subagent pipeline. Agents use OpenAI-specific model strings in `~/.pi/agent/prusax0/agents`.
+
+$ARGUMENTS
+
+Read the project's CLAUDE.md/AGENTS.md/README if present. Before asking questions, grep `/Users/leo/.pi/agent/prusax0/memory/long_term/*.md` for significant keywords from the request and read only matching `## ... ---` blocks. Carry relevant findings into sub-plans as `## Prior knowledge`.
+
+Ask clarifying questions before writing anything. For non-obvious design decisions, present options/trade-offs and ask whether to proceed with the recommendation. After each round, ask: "Continue questions" or "Finalize spec".
+
+## Phase 1: Master plan
+
+Use `subagent` agent `architect` to propose reviewable sub-plans and dependencies. Use `subagent` agent `advisor` to review the decomposition. Present the review as a decision gate before writing files.
+
+Create the master via `/Users/leo/.pi/agent/prusax0/scripts/plan-create <project>-<slug>` and write:
+
+```markdown
+# <Title>
+
+## Why
+...
+
+## What
+...
+
+## Execution model
+Each step maps to one sub-plan in `plans/doing/`. Execute a sub-plan with `/execute-autopilot`.
+
+## Sub-plans
+| # | Slug | Summary | Depends on |
+|---|------|---------|------------|
+
+## Constraints / non-goals
+...
+
+## Progress
+- [ ] Step 1: Sub-plan — <slug>
+```
+
+Keep total sub-plans ≤8.
+
+## Phase 2: Sub-plans
+
+For each sub-plan, create a self-contained pipeline plan with:
+- Why / What
+- Acceptance criteria including tests/lint and fail-before/pass-after for new/updated tests
+- Implementation context with files/symbols/behaviors/edge cases
+- Prior knowledge references
+- Pipeline roles:
+  1. Architect (`architect`): returns an architecture brief; **the parent/orchestrator appends it** as `## Architecture brief`; architect does not edit files.
+  2. Coder (`coder`): implements brief with TDD; reports fail-before/pass-after.
+  3. Refactorer (`refactorer`): simplifies without behavior changes.
+  4. Reviewer (`reviewer`): PASS/FAIL; on FAIL, one repair pass by `coder`, then re-review.
+- Steps with `(depends_on)` annotations for those four roles
+- Progress checkboxes
+- Constraints / non-goals
+
+Use symbol names and file paths, never line numbers. Sub-plans must be executable by `/execute-autopilot` without additional clarification.

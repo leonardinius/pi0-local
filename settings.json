@@ -1,0 +1,15 @@
+{
+  "lastChangelogVersion": "0.70.2",
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-5.5",
+  "defaultThinkingLevel": "medium",
+  "packages": [],
+  "prompts": [
+    "prusax0/prompts"
+  ],
+  "enableSkillCommands": true,
+  "extensions": [
+    "prusax0/extensions/subagent",
+    "prusax0/extensions/rtk"
+  ]
+}

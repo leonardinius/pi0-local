@@ -1,0 +1,114 @@
+#!/bin/sh
+# plan-archive — Archive old plans from plans/ subdirectories into plans/archive/<subdir>/.
+#
+# A plan file is eligible for archival if:
+#   1. Its age > AGE_ARCHIVE days (30), regardless of count, OR
+#   2. Its rank within its directory > KEEP (15) AND age > AGE_SAFETY days (7)
+#
+# Archive structure mirrors plans/:
+#   plans/done/foo.md       → plans/archive/done/foo.md
+#   plans/abandoned/bar.md  → plans/archive/abandoned/bar.md
+#   plans/doing/baz.md      → plans/archive/doing/baz.md  (manual only)
+#
+# Automatic mode (no args): processes done/ and abandoned/ only.
+# Manual mode: pass subdirectory names as arguments, e.g. plan-archive doing
+#
+# Age is derived from the 14-digit Zettelkasten timestamp prefix in the filename
+# (YYYYMMDDHHmmss), falling back to file mtime when no prefix is present.
+#
+# Idempotent — safe to run multiple times. Called automatically by plan-done
+# and plan-abandon; also safe to invoke manually.
+#
+# Usage: plan-archive [subdir...]
+
+set -eu
+
+PLANS_DIR="/Users/leo/.pi/agent/prusax0/plans"
+KEEP=15        # keep at most this many recent plans per directory
+AGE_ARCHIVE=30 # always archive if older than this many days
+AGE_SAFETY=7   # never rank-archive if younger than this many days
+
+now="$(date '+%s')"
+archived=0
+
+# file_epoch <path>
+# Print the Unix epoch for the plan file, derived from its filename timestamp
+# (first 8 digits as YYYYMMDD) or falling back to file mtime.
+file_epoch() {
+    f="$1"
+    stem="$(basename "$f" .md)"
+    if echo "$stem" | grep -qE '^[0-9]{14}'; then
+        date_part="$(echo "$stem" | cut -c1-8)"
+        # Try macOS date -j first, then GNU date -d.
+        epoch="$(date -j -f '%Y%m%d' "$date_part" '+%s' 2>/dev/null \
+            || date -d "$date_part" '+%s' 2>/dev/null \
+            || echo '')"
+        if [ -n "$epoch" ]; then
+            echo "$epoch"
+            return
+        fi
+    fi
+    # Fall back to mtime (macOS stat -f, then GNU stat -c).
+    stat -f '%m' "$f" 2>/dev/null || stat -c '%Y' "$f"
+}
+
+# process_dir <subdir-name>
+# Evaluate each .md file in plans/<subdir> and move eligible ones to
+# plans/archive/<subdir>/. Modifies the outer `archived` counter directly.
+process_dir() {
+    subdir="$1"
+    dir="$PLANS_DIR/$subdir"
+    dest="$PLANS_DIR/archive/$subdir"
+
+    [ -d "$dir" ] || return 0
+
+    # Check for any .md files before proceeding.
+    has_files=0
+    for f in "$dir"/*.md; do
+        [ -f "$f" ] && has_files=1 && break
+    done
+    [ "$has_files" -eq 0 ] && return 0
+
+    mkdir -p "$dest"
+
+    rank=0
+    # Heredoc redirect keeps the while loop in the current shell (no subshell),
+    # so modifications to `rank` and `archived` persist after the loop.
+    while IFS= read -r f; do
+        [ -f "$f" ] || continue
+        rank=$((rank + 1))
+
+        epoch="$(file_epoch "$f")"
+        age=$(( (now - epoch) / 86400 ))
+
+        eligible=0
+        if [ "$age" -gt "$AGE_ARCHIVE" ]; then
+            eligible=1
+        elif [ "$rank" -gt "$KEEP" ] && [ "$age" -gt "$AGE_SAFETY" ]; then
+            eligible=1
+        fi
+
+        if [ "$eligible" -eq 1 ]; then
+            mv "$f" "$dest/$(basename "$f")"
+            archived=$((archived + 1))
+        fi
+    done << FILELIST
+$(ls -1 "$dir"/*.md 2>/dev/null | sort -r)
+FILELIST
+}
+
+# Determine which subdirs to process.
+if [ $# -gt 0 ]; then
+    # Manual mode: process exactly the named subdirs.
+    for subdir in "$@"; do
+        process_dir "$subdir"
+    done
+else
+    # Automatic mode: done and abandoned only; doing is skipped.
+    process_dir "done"
+    process_dir "abandoned"
+fi
+
+if [ "$archived" -gt 0 ]; then
+    printf 'plan-archive: archived %d plan(s)\n' "$archived" >&2
+fi

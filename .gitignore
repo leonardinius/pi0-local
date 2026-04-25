@@ -1,0 +1,19 @@
+# Secrets / auth tokens
+auth.json
+
+# Runtime-generated Pi state
+sessions/
+bin/
+
+# Short-term working memory snapshots (keep directory placeholder)
+prusax0/memory/short_term/*
+!prusax0/memory/short_term/.gitkeep
+
+# Python/build artifacts
+__pycache__/
+*.py[cod]
+
+# OS/editor noise
+.DS_Store
+*.swp
+*.swo
