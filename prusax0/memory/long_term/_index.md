@@ -1,7 +1,7 @@
 # Knowledge Cache Index
 
 > **Last updated**: 2026-04-26
-> **Total entries**: 3
+> **Total entries**: 4
 
 ## Category Files
 
@@ -12,11 +12,11 @@
 | `investigations.md` | 1 | 2026-04-26 | Research results, deep-dive findings, codebase explorations |
 | `patterns.md` | 0 | — | Code patterns, conventions, architecture decisions |
 | `services.md` | 0 | — | Per-service gotchas, configs, quirks |
-| `tools.md` | 2 | 2026-04-26 | CLI commands, deployment workflows, useful shortcuts |
+| `tools.md` | 3 | 2026-04-26 | CLI commands, deployment workflows, useful shortcuts |
 
 ## Tag Cloud
 
-extension, openai, pi, rtk, subagents, token-savings, workflow
+backup, config, extension, git, openai, pi, rtk, subagents, token-savings, workflow
 
 ## Quick Lookup
 

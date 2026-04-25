@@ -42,3 +42,12 @@ The extension intercepts Pi `bash` tool calls and user `!` bash via `rtk rewrite
 RTK config is materialized at `~/Library/Application Support/rtk/config.toml`; tracking is enabled, telemetry disabled. Check savings with `rtk gain` or Pi `/rtk gain`. `rtk session` and `rtk discover` inspect Claude Code history under `~/.claude/projects`; on Pi-only setups where that directory does not exist, their exit 1 warnings are expected and harmless. The Pi RTK extension no longer advertises those Claude Code history commands in its system guidance or `/rtk` command description.
 
 ---
+
+## Pi Local Config Git Repository
+
+> **Added**: 2026-04-26
+> **Tags**: pi, git, config, backup
+
+Pi local config is versioned at `/Users/leo/.pi/agent` with remote `git@github.com:leonardinius/pi0-local.git` on branch `main`. The repo includes global Pi config plus `prusax0` agents, extensions, prompts, hooks, scripts, schemas, and long-term memory. `.gitignore` excludes `auth.json`, `sessions/`, `bin/`, Python caches, and short-term memory snapshots except `.gitkeep`.
+
+---
