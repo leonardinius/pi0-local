@@ -24,6 +24,8 @@ Before writing the plan file:
 
 Then run `/Users/leo/.pi/agent/prusax0/scripts/plan-create <project>-<slug>` to create the plan file, where `<project>` is the git repo basename from `git rev-parse --show-toplevel`.
 
+Planning-only boundary: after approval, write the plan only. Do not execute steps, mutate target files, run non-read-only implementation commands, or mark progress complete without a separate explicit execution request. Treat ambiguous confirmations like "proceed" as plan-write approval only; end with the plan path and tell the user to run it via an execute command.
+
 Write the plan with:
 - **Why**: importance and timing
 - **What**: objective and definition of done

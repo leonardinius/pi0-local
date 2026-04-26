@@ -67,3 +67,13 @@ gh issue view <issue-or-url> --json number,title,body,state,labels,assignees,com
 This works only when `gh` is installed, authenticated, and can infer the repo from git remote (or the user provides `owner/name` / full URL). If not, ask the user to run `gh auth login`, provide the repo, or paste issue context.
 
 ---
+
+## Pi Plan Prompts Are Planning-Only
+
+> **Added**: 2026-04-26
+> **Updated**: 2026-04-26
+> **Tags**: pi, plan, workflow, prompts
+
+`~/.pi/agent/prusax0/prompts/{plan,master-plan,ultra-plan}.md` are planning-only: after approval, write plan files only. Ambiguous “proceed” means plan-write approval, not execution. Do not mutate targets, run non-read-only implementation commands, or mark progress complete without a separate explicit execution request; end with plan path(s) and tell the user to run them via an execute command, which should run `plan-done` on completion.
+
+---

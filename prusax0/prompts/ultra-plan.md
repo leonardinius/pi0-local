@@ -22,7 +22,11 @@ Ask clarifying questions before writing anything. For non-obvious design decisio
 
 Use `subagent` agent `architect` to propose reviewable sub-plans and dependencies. Use `subagent` agent `advisor` to review the decomposition. Present the review as a decision gate before writing files.
 
-Create the master via `/Users/leo/.pi/agent/prusax0/scripts/plan-create <project>-<slug>` and write:
+Create the master via `/Users/leo/.pi/agent/prusax0/scripts/plan-create <project>-<slug>`.
+
+Planning-only boundary: after approval, write plan files only. Do not execute sub-plan roles, mutate target files, run non-read-only implementation commands, or mark progress complete without a separate explicit execution request. Treat ambiguous confirmations like "proceed" as plan-write approval only; end with plan paths and tell the user to run them via an execute command.
+
+Write:
 
 ```markdown
 # <Title>

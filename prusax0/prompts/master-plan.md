@@ -18,7 +18,11 @@ Ask clarifying questions first. Understand goal, scope, constraints, and natural
 
 Use `subagent` agent `architect` to propose a multi-PR decomposition. Then use `subagent` agent `advisor` to review boundaries, sequencing risks, and missing coverage. Present the review to me as a decision gate and wait for confirmation before writing files.
 
-Run `/Users/leo/.pi/agent/prusax0/scripts/plan-create <project>-<slug>` to create the master plan file. Write:
+Run `/Users/leo/.pi/agent/prusax0/scripts/plan-create <project>-<slug>` to create the master plan file.
+
+Planning-only boundary: after approval, write plan files only. Do not execute PR/sub-plan steps, mutate target files, run non-read-only implementation commands, or mark progress complete without a separate explicit execution request. Treat ambiguous confirmations like "proceed" as plan-write approval only; end with plan paths and tell the user to run them via an execute command.
+
+Write:
 
 ```markdown
 # <Title>
