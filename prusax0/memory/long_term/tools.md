@@ -77,3 +77,13 @@ This works only when `gh` is installed, authenticated, and can infer the repo fr
 `~/.pi/agent/prusax0/prompts/{plan,master-plan,ultra-plan}.md` are planning-only: after approval, write plan files only. Ambiguous “proceed” means plan-write approval, not execution. Do not mutate targets, run non-read-only implementation commands, or mark progress complete without a separate explicit execution request; end with plan path(s) and tell the user to run them via an execute command, which should run `plan-done` on completion.
 
 ---
+
+## Zsh Autocomplete for Git, Ripgrep, and RTK
+
+> **Added**: 2026-04-26
+> **Updated**: 2026-04-26
+> **Tags**: zsh, autocomplete, git, rg, rtk
+
+Installed Homebrew `zsh-completions` and `zsh-autocomplete`. `~/.zshrc` prepends `~/.zsh/completions`, Homebrew `share/zsh/site-functions`, and `share/zsh-completions` to `fpath`, but `zsh-autocomplete` is commented out because its type-ahead suggestions were too aggressive; normal `compinit` is active. Custom RTK completion lives at `~/.zsh/completions/_rtk`; Git and ripgrep completions load as `_git` and `_rg`. If zsh reports insecure directories, run `compaudit`; `/opt/homebrew/share` was fixed with `chmod go-w /opt/homebrew/share`. Rebuild with `rm -f ~/.zcompdump*` and verify via `zsh -ic 'autoload -Uz +X _git _rg _rtk; whence -w _git _rg _rtk'`.
+
+---

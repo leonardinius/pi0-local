@@ -1,7 +1,7 @@
 # Knowledge Cache Index
 
 > **Last updated**: 2026-04-26
-> **Total entries**: 6
+> **Total entries**: 7
 
 ## Category Files
 
@@ -12,11 +12,11 @@
 | `investigations.md` | 1 | 2026-04-26 | Research results, deep-dive findings, codebase explorations |
 | `patterns.md` | 1 | 2026-04-26 | Code patterns, conventions, architecture decisions |
 | `services.md` | 0 | — | Per-service gotchas, configs, quirks |
-| `tools.md` | 4 | 2026-04-26 | CLI commands, deployment workflows, useful shortcuts |
+| `tools.md` | 5 | 2026-04-26 | CLI commands, deployment workflows, useful shortcuts |
 
 ## Tag Cloud
 
-backup, config, extension, git, hooks, memory, openai, pi, plan, prompts, rtk, subagents, token-savings, workflow
+autocomplete, backup, config, extension, git, hooks, memory, openai, pi, plan, prompts, rg, rtk, subagents, token-savings, workflow, zsh
 
 ## Quick Lookup
 
