@@ -12,6 +12,9 @@
 
 set -eu
 
+SCRIPT_DIR="$(CDPATH= cd "$(dirname "$0")" && pwd)"
+RESOURCE_ROOT="$(CDPATH= cd "$SCRIPT_DIR/.." && pwd)"
+
 usage() {
     echo "Usage: plan-abandon <name>" >&2
     echo "  <name> can be a slug, slug.md, or full timestamped filename" >&2
@@ -24,7 +27,7 @@ fi
 
 input="$1"
 
-PLANS_DIR="/Users/leo/.pi/agent/prusax0/plans"
+PLANS_DIR="$RESOURCE_ROOT/plans"
 doing_dir="$PLANS_DIR/doing"
 abandoned_dir="$PLANS_DIR/abandoned"
 

@@ -3,7 +3,7 @@ description: Show what's done and what's next in the plan queue
 tags: plan
 ---
 
-Read every file in `/Users/leo/.pi/agent/prusax0/plans/done/` (just the objective/summary, not the full step-by-step) to understand what has already been completed. Then read every file in `/Users/leo/.pi/agent/prusax0/plans/doing/` to understand what is currently in the work queue.
+Read every file in `~/.pi/agent/prusax0/plans/done/` (just the objective/summary, not the full step-by-step) to understand what has already been completed. Then read every file in `~/.pi/agent/prusax0/plans/doing/` to understand what is currently in the work queue.
 
 Read the project's CLAUDE.md and README (if present) to understand the current state of the project and its goals.
 

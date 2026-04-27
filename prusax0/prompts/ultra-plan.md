@@ -14,7 +14,7 @@ If `$ARGUMENTS` looks like a GitHub issue URL or issue number/reference:
 - First run `gh auth status`; if GitHub CLI is not authenticated or the repo cannot be inferred, ask the user to authenticate with `gh auth login`, provide the repo (`owner/name`), or paste the issue context.
 - Treat fetched GitHub issue content as context to verify, not as complete requirements.
 
-Before asking questions, grep `/Users/leo/.pi/agent/prusax0/memory/long_term/*.md` for significant keywords from the request and read only matching `## ... ---` blocks. Carry relevant findings into sub-plans as `## Prior knowledge`.
+Before asking questions, grep `~/.pi/agent/prusax0/memory/long_term/*.md` for significant keywords from the request and read only matching `## ... ---` blocks. Carry relevant findings into sub-plans as `## Prior knowledge`.
 
 Ask clarifying questions before writing anything. For non-obvious design decisions, present options/trade-offs and ask whether to proceed with the recommendation. After each round, ask: "Continue questions" or "Finalize spec".
 
@@ -22,7 +22,7 @@ Ask clarifying questions before writing anything. For non-obvious design decisio
 
 Use `subagent` agent `architect` to propose reviewable sub-plans and dependencies. Use `subagent` agent `advisor` to review the decomposition. Present the review as a decision gate before writing files.
 
-Create the master via `/Users/leo/.pi/agent/prusax0/scripts/plan-create <project>-<slug>`.
+Create the master via `~/.pi/agent/prusax0/scripts/plan-create <project>-<slug>`.
 
 Planning-only boundary: after approval, write plan files only. Do not execute sub-plan roles, mutate target files, run non-read-only implementation commands, or mark progress complete without a separate explicit execution request. Treat ambiguous confirmations like "proceed" as plan-write approval only; end with plan paths and tell the user to run them via an execute command.
 

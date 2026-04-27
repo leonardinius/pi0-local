@@ -7,10 +7,10 @@ Consolidate short-term memory into long-term knowledge cache. This is the end-of
 ## Process
 
 ### 1. Read All Short-Term Files
-Read every `.md` file in `/Users/leo/.pi/agent/prusax0/memory/short_term/`.
+Read every `.md` file in `~/.pi/agent/prusax0/memory/short_term/`.
 
 ### 2. Read Long-Term State
-Read `/Users/leo/.pi/agent/prusax0/memory/long_term/_index.md` for entry counts and tag cloud overview. Do NOT read category files -- the dedup protocol in step 4 handles per-entry checking via Grep.
+Read `~/.pi/agent/prusax0/memory/long_term/_index.md` for entry counts and tag cloud overview. Do NOT read category files -- the dedup protocol in step 4 handles per-entry checking via Grep.
 
 ### 3. Extract & Route Knowledge
 
@@ -77,14 +77,14 @@ For entries older than 6 months with no updates:
 
 ### 5. Rebuild Index
 
-Completely rewrite `/Users/leo/.pi/agent/prusax0/memory/long_term/_index.md`:
+Completely rewrite `~/.pi/agent/prusax0/memory/long_term/_index.md`:
 - Update "Last updated" date and "Total entries" count
 - Update the category table with current entry counts and last-updated dates per file
 - Rebuild the tag cloud: collect all `Tags:` values across all category files, alphabetize, deduplicate
 - Update the quick lookup table if new common patterns emerge
 
 ### 6. Clean Short-Term
-Delete ALL `.md` files from `/Users/leo/.pi/agent/prusax0/memory/short_term/` (keep `.gitkeep`).
+Delete ALL `.md` files from `~/.pi/agent/prusax0/memory/short_term/` (keep `.gitkeep`).
 
 ### 7. Report
 Tell the user:

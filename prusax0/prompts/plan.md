@@ -22,7 +22,7 @@ Before writing the plan file:
 3. Use `subagent` agent `advisor` to review the proposed steps for dependencies, risks, edge cases, and alternatives.
 4. Present the advisor findings to me as a decision gate. Do not silently apply them.
 
-Then run `/Users/leo/.pi/agent/prusax0/scripts/plan-create <project>-<slug>` to create the plan file, where `<project>` is the git repo basename from `git rev-parse --show-toplevel`.
+Then run `~/.pi/agent/prusax0/scripts/plan-create <project>-<slug>` to create the plan file, where `<project>` is the git repo basename from `git rev-parse --show-toplevel`.
 
 Planning-only boundary: after approval, write the plan only. Do not execute steps, mutate target files, run non-read-only implementation commands, or mark progress complete without a separate explicit execution request. Treat ambiguous confirmations like "proceed" as plan-write approval only; end with the plan path and tell the user to run it via an execute command.
 

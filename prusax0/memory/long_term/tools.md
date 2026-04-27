@@ -39,16 +39,19 @@ RTK (`rtk-ai/rtk`) is installed via Homebrew at `/opt/homebrew/bin/rtk`. Pi auto
 
 The extension intercepts Pi `bash` tool calls and user `!` bash via `rtk rewrite`, defaults rewritten RTK commands to `--ultra-compact`, and injects system guidance to prefer RTK for high-output inspection (`rtk read`, `rtk grep`, `rtk find`, `rtk git diff`, `rtk test`, `rtk err`). Opt out per command with `RTK_DISABLE=1` or `# rtk:off`; opt out of ultra-compact with `PI_RTK_ULTRA=0`.
 
-RTK config is materialized at `~/Library/Application Support/rtk/config.toml`; tracking is enabled, telemetry disabled. Check savings with `rtk gain` or Pi `/rtk gain`. `rtk session` and `rtk discover` inspect Claude Code history under `~/.claude/projects`; on Pi-only setups where that directory does not exist, their exit 1 warnings are expected and harmless. The Pi RTK extension no longer advertises those Claude Code history commands in its system guidance or `/rtk` command description.
+RTK config is materialized at `~/Library/Application Support/rtk/config.toml` on macOS or `~/.config/rtk/config.toml` on Linux; tracking DB defaults to `~/.local/share/rtk/history.db`. Tracking is enabled, telemetry disabled. Check savings with `rtk gain` or Pi `/rtk gain`.
+
+Ubuntu server install decision: use official RTK release artifacts, not cargo. On amd64 install pinned `.deb` (`rtk_0.37.2-1_amd64.deb`) to `/usr/bin/rtk`; on arm64 use the release tarball (`rtk-aarch64-unknown-linux-gnu.tar.gz`) into `~/.local/bin`. Run `rtk config --create` and `rtk telemetry disable`; do not rely on `rtk init` for Pi because the Pi RTK extension already injects guidance and rewrites bash through `rtk rewrite`. `rtk session`/`discover` inspect Claude Code history under `~/.claude/projects`; on Pi-only setups where that directory does not exist, their exit 1 warnings are expected and harmless.
 
 ---
 
 ## Pi Local Config Git Repository
 
 > **Added**: 2026-04-26
+> **Updated**: 2026-04-26
 > **Tags**: pi, git, config, backup
 
-Pi local config is versioned at `/Users/leo/.pi/agent` with remote `git@github.com:leonardinius/pi0-local.git` on branch `main`. The repo includes global Pi config plus `prusax0` agents, extensions, prompts, hooks, scripts, schemas, and long-term memory. `.gitignore` excludes `auth.json`, `sessions/`, `bin/`, Python caches, and short-term memory snapshots except `.gitkeep`.
+Pi local config is versioned at `~/.pi/agent` with remote `git@github.com:leonardinius/pi0-local.git` on branch `main`. The repo includes global Pi config plus `prusax0` agents, extensions, prompts, hooks, scripts, schemas, and long-term memory. `.gitignore` excludes `auth.json`, `telegram.json`, `sessions/`, `bin/`, `tmp/`, Python caches, and short-term memory snapshots except `.gitkeep`.
 
 ---
 
@@ -75,6 +78,15 @@ This works only when `gh` is installed, authenticated, and can infer the repo fr
 > **Tags**: pi, plan, workflow, prompts
 
 `~/.pi/agent/prusax0/prompts/{plan,master-plan,ultra-plan}.md` are planning-only: after approval, write plan files only. Ambiguous “proceed” means plan-write approval, not execution. Do not mutate targets, run non-read-only implementation commands, or mark progress complete without a separate explicit execution request; end with plan path(s) and tell the user to run them via an execute command, which should run `plan-done` on completion.
+
+---
+
+## Systemd Monitoring for Pi Inside tmux
+
+> **Added**: 2026-04-26
+> **Tags**: pi, systemd, tmux, deployment
+
+Keep tmux, but make Pi lifetime observable: systemd runs a foreground wrapper (`work-pi-run`), the wrapper starts detached tmux with `exec pi '/telegram-connect'`, then loops on `tmux has-session`. Because the pane command is `exec pi` and `remain-on-exit` is off, Pi exit closes the tmux session; wrapper exits non-zero; `Restart=always` restarts it. Do not use `Type=forking` + `RemainAfterExit=yes` for this.
 
 ---
 

@@ -4,7 +4,7 @@ description: Save a checkpoint of the current conversation to short-term memory 
 
 Save a checkpoint of the current conversation to short-term memory NOW.
 
-Create a markdown file at `/Users/leo/.pi/agent/prusax0/memory/short_term/` with filename format: `YYYY-MM-DD_HHMMSS.md` (use current UTC timestamp).
+Create a markdown file at `~/.pi/agent/prusax0/memory/short_term/` with filename format: `YYYY-MM-DD_HHMMSS.md` (use current UTC timestamp).
 
 The file MUST contain ALL of the following sections:
 
@@ -41,7 +41,7 @@ After saving the short-term snapshot, also do the following:
 
 ## Proactive Long-Term Save
 
-Check if any of these completed artifacts exist in this session and save them to the appropriate long-term category file at `/Users/leo/.pi/agent/prusax0/memory/long_term/`:
+Check if any of these completed artifacts exist in this session and save them to the appropriate long-term category file at `~/.pi/agent/prusax0/memory/long_term/`:
 
 | Completed artifact | Save to |
 |---|---|

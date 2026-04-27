@@ -1,22 +1,22 @@
 # Knowledge Cache Index
 
 > **Last updated**: 2026-04-26
-> **Total entries**: 7
+> **Total entries**: 15
 
 ## Category Files
 
 | File | Entries | Last Updated | Description |
 |------|---------|--------------|-------------|
 | `queries.md` | 0 | — | Working SQL, BigQuery, PromQL, JQL, CQL queries |
-| `runbooks.md` | 0 | — | Incident resolution, debugging procedures, operational workflows |
-| `investigations.md` | 1 | 2026-04-26 | Research results, deep-dive findings, codebase explorations |
+| `runbooks.md` | 6 | 2026-04-26 | Incident resolution, debugging procedures, operational workflows |
+| `investigations.md` | 2 | 2026-04-26 | Research results, deep-dive findings, codebase explorations |
 | `patterns.md` | 1 | 2026-04-26 | Code patterns, conventions, architecture decisions |
 | `services.md` | 0 | — | Per-service gotchas, configs, quirks |
-| `tools.md` | 5 | 2026-04-26 | CLI commands, deployment workflows, useful shortcuts |
+| `tools.md` | 6 | 2026-04-26 | CLI commands, deployment workflows, useful shortcuts |
 
 ## Tag Cloud
 
-autocomplete, backup, config, extension, git, hooks, memory, openai, pi, plan, prompts, rg, rtk, subagents, token-savings, workflow, zsh
+autocomplete, backup, config, deployment, docker, env, extension, git, gitignore, health, hooks, logs, memory, openai, permissions, pi, plan, project, prompts, rg, rtk, secrets, security, setup, ssh, subagents, sudo, systemd, telegram, tmux, token-savings, workflow, zsh
 
 ## Quick Lookup
 
@@ -32,7 +32,7 @@ autocomplete, backup, config, extension, git, hooks, memory, openai, pi, plan, p
 ## How to Search
 
 1. **Don't read this index first** — go straight to Grep
-2. Grep for tags: `Grep pattern="Tags:.*keyword" path="/Users/leo/.pi/agent/prusax0/memory/long_term/"`
+2. Grep for tags: `Grep pattern="Tags:.*keyword" path="~/.pi/agent/prusax0/memory/long_term/"`
 3. Grep returns file + line number — read only the matched `## ... ---` block
 4. For broad exploration, read this index to discover category coverage
 
@@ -41,5 +41,5 @@ autocomplete, backup, config, extension, git, hooks, memory, openai, pi, plan, p
 - Each category file holds up to **50 entries** before splitting
 - When split, sub-files follow the pattern: `{category}_{tag}.md` (e.g. `investigations_frontier.md`)
 - The original file becomes a routing index listing sub-files
-- Grep still searches all files: `Grep pattern="Tags:.*keyword" path="/Users/leo/.pi/agent/prusax0/memory/long_term/"` — works regardless of splits
+- Grep still searches all files: `Grep pattern="Tags:.*keyword" path="~/.pi/agent/prusax0/memory/long_term/"` — works regardless of splits
 - Splitting is managed by `/save` only — proactive saves always append to the main file

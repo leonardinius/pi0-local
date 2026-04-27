@@ -1,9 +1,11 @@
 # Secrets / auth tokens
 auth.json
+telegram.json
 
 # Runtime-generated Pi state
 sessions/
 bin/
+tmp/
 
 # Short-term working memory snapshots (keep directory placeholder)
 prusax0/memory/short_term/*

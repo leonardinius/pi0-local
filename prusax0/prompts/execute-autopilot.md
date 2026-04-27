@@ -5,7 +5,7 @@ tags: plan, execute
 
 > **Pi/OpenAI subagents**: Use `subagent` with role routing. Agents live in `~/.pi/agent/prusax0/agents` and use OpenAI model strings.
 
-Read plan from `/Users/leo/.pi/agent/prusax0/plans/doing/` (pick most relevant if no filename is given).
+Read plan from `~/.pi/agent/prusax0/plans/doing/` (pick most relevant if no filename is given).
 
 $ARGUMENTS
 
@@ -43,6 +43,6 @@ For each step in dependency order:
 5. Run tests/lint in the main worktree after mutation steps. Use `RTK_DISABLE=1` for commands where exact raw output/behavior matters.
 6. Mark successful step `[x]` with a summary and commit as `[step N] <title>`.
 
-All done: add summary to the plan and run `/Users/leo/.pi/agent/prusax0/scripts/plan-done <slug>`.
+All done: add summary to the plan and run `~/.pi/agent/prusax0/scripts/plan-done <slug>`.
 
 Do not push, open PRs, or continue after a failure. Report steps executed, decisions, tests, commits, and risks.

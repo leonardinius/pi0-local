@@ -19,6 +19,24 @@ from datetime import datetime, timezone
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from paths import SCHEMAS_CONFIG, SCHEMAS_DIR
 
+
+def expand_config_path(value):
+    """Expand ~ and environment variables in paths from schemas.json."""
+    if not value:
+        return ""
+    return os.path.abspath(os.path.expandvars(os.path.expanduser(value)))
+
+
+def portable_config_path(value):
+    """Store paths under the user's home directory as ~/... for portability."""
+    absolute = expand_config_path(value)
+    home = os.path.abspath(os.path.expanduser("~"))
+    if absolute == home:
+        return "~"
+    if absolute.startswith(home + os.sep):
+        return "~" + absolute[len(home):]
+    return absolute
+
 # ---------------------------------------------------------------------------
 # Type simplification
 # ---------------------------------------------------------------------------
@@ -216,6 +234,7 @@ def write_global_index(all_tables, bq_datasets, output_dir):
 
 def discover_sources(workspace_dir):
     """Walk workspace to find structure.sql files and generate schemas.json."""
+    workspace_dir = expand_config_path(workspace_dir)
     sources = []
     seen_ids = set()
 
@@ -248,7 +267,7 @@ def discover_sources(workspace_dir):
             )
 
     config = {
-        "workspace": workspace_dir,
+        "workspace": portable_config_path(workspace_dir),
         "sources": sources,
         "bigquery_datasets": {},
     }
@@ -290,7 +309,7 @@ def _load_config():
 def extract_all():
     """Read schemas.json, parse each source, write cache files."""
     config = _load_config()
-    workspace = config.get("workspace", "")
+    workspace = expand_config_path(config.get("workspace", ""))
     sources = config["sources"]
     bq_datasets = config.get("bigquery_datasets", {})
 
@@ -338,7 +357,7 @@ def extract_all():
 def check_staleness():
     """Compare file mtimes of sources vs cached schema files."""
     config = _load_config()
-    workspace = config.get("workspace", "")
+    workspace = expand_config_path(config.get("workspace", ""))
     sources = config["sources"]
     stale = []
 
@@ -388,7 +407,7 @@ def main():
     if not args:
         extract_all()
     elif args[0] == "--discover" and len(args) >= 2:
-        workspace = os.path.abspath(args[1])
+        workspace = expand_config_path(args[1])
         if not os.path.isdir(workspace):
             print(f"ERROR: {workspace} is not a directory.", file=sys.stderr)
             sys.exit(1)

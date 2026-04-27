@@ -23,7 +23,10 @@
 
 set -eu
 
-PLANS_DIR="/Users/leo/.pi/agent/prusax0/plans"
+SCRIPT_DIR="$(CDPATH= cd "$(dirname "$0")" && pwd)"
+RESOURCE_ROOT="$(CDPATH= cd "$SCRIPT_DIR/.." && pwd)"
+
+PLANS_DIR="$RESOURCE_ROOT/plans"
 KEEP=15        # keep at most this many recent plans per directory
 AGE_ARCHIVE=30 # always archive if older than this many days
 AGE_SAFETY=7   # never rank-archive if younger than this many days

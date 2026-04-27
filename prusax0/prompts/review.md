@@ -7,7 +7,7 @@ Review code like a senior engineer reviewing a junior's work. Look for real prob
 
 ## Getting the code to review
 
-Run `/Users/leo/.pi/agent/prusax0/scripts/review-diff $ARGUMENTS` to get the list of changed files and the diff.
+Run `~/.pi/agent/prusax0/scripts/review-diff $ARGUMENTS` to get the list of changed files and the diff.
 
 **Default** (no arguments): reviews working tree changes.
 Other modes: `branch <name>`, `merge`, `last <N>`, `files <file1> [file2...]`.

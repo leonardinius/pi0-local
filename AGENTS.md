@@ -24,18 +24,18 @@ The goal is knowledge gathering — about GoCardless, its internal processes, an
 When writing SQL, BigQuery, or database queries, **look up table schemas before guessing column names**.
 
 ### Schema files location
-`/Users/leo/.pi/agent/prusax0/schemas/`
+`~/.pi/agent/prusax0/schemas/`
 
 ### How to look up a table
 
 1. **Find which schema file has the table**:
    ```
-   Grep pattern="^TABLE_NAME -> " path="/Users/leo/.pi/agent/prusax0/schemas/_tables.md"
+   Grep pattern="^TABLE_NAME -> " path="~/.pi/agent/prusax0/schemas/_tables.md"
    ```
 
 2. **Read the table's columns**:
    ```
-   Grep pattern="^## TABLE_NAME$" path="/Users/leo/.pi/agent/prusax0/schemas/SCHEMA_ID.md" -A 1
+   Grep pattern="^## TABLE_NAME$" path="~/.pi/agent/prusax0/schemas/SCHEMA_ID.md" -A 1
    ```
 
 3. **For BigQuery queries** with dataset prefixes:
@@ -53,7 +53,7 @@ Run `/schema-refresh` to re-extract from structure.sql files. If the cache has n
 ## Memory Management — Knowledge Cache
 
 ### Architecture
-2-tier memory system at `/Users/leo/.pi/agent/prusax0/memory`:
+2-tier memory system at `~/.pi/agent/prusax0/memory`:
 - **short_term/**: Session snapshots saved manually via `/checkpoint` (no automatic Pi hook is installed yet)
 - **long_term/**: Knowledge cache — 6 category files + index, persisted across sessions
 
