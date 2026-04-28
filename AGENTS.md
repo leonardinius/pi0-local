@@ -1,8 +1,6 @@
 # Prusax0 Pi Workflow
 
-These global instructions were initialized from `~/Downloads/claude` for Pi. Saved memories from that source were intentionally ignored; the memory cache under `~/.pi/agent/prusax0/memory` starts fresh.
-
-**Pi adaptation:** This setup uses a Pi subagent extension at `~/.pi/agent/prusax0/extensions/subagent`. Workflow commands should use the `subagent` tool with agents from `~/.pi/agent/prusax0/agents` (`scout`, `architect`, `planner`, `coder`, `refactorer`, `reviewer`, `advisor`). These agents are OpenAI-specific and currently use `openai-codex/gpt-5.5:<thinking>`. Use manual `/checkpoint` and `/save`; no automatic Claude Code hooks are installed.
+**Pi adaptation:** This setup uses a Pi subagent extension at `~/.pi/agent/prusax0/extensions/subagent`. Workflow commands should use the `subagent` tool with agents from `~/.pi/agent/prusax0/agents` (`scout`, `architect`, `planner`, `coder`, `refactorer`, `reviewer`, `advisor`). These agents are OpenAI-specific and currently use `openai-codex/gpt-5.5:<thinking>`.
 
 **Subagent execution rules:** Route pipeline steps by role name (`Architect` → `architect`, `Coder` → `coder`, `Refactorer` → `refactorer`, `Reviewer` → `reviewer`). The parent/orchestrator owns plan progress edits. Do not run mutation-capable subagents in parallel in the same worktree; this setup does not create git worktrees automatically.
 
@@ -19,116 +17,49 @@ The goal is knowledge gathering — about GoCardless, its internal processes, an
 - Evidence-first, always
 - Verify every fact against the source before presenting
 
-## Schema Cache — Database Table Lookups
-
-When writing SQL, BigQuery, or database queries, **look up table schemas before guessing column names**.
-
-### Schema files location
-`~/.pi/agent/prusax0/schemas/`
-
-### How to look up a table
-
-1. **Find which schema file has the table**:
-   ```
-   Grep pattern="^TABLE_NAME -> " path="~/.pi/agent/prusax0/schemas/_tables.md"
-   ```
-
-2. **Read the table's columns**:
-   ```
-   Grep pattern="^## TABLE_NAME$" path="~/.pi/agent/prusax0/schemas/SCHEMA_ID.md" -A 1
-   ```
-
-3. **For BigQuery queries** with dataset prefixes:
-   - Grep `_tables.md` for the dataset prefix to find the schema file
-   - Then look up the table name in that schema file
-
-### When to look up schemas
-- Before writing any SQL/BQ query that references specific columns
-- When a query error mentions "column not found" or wrong column names
-- When unsure about column types
-
-### Refresh
-Run `/schema-refresh` to re-extract from structure.sql files. If the cache has not been bootstrapped yet, run `/schema-refresh --discover /path/to/workspace` first.
+### Response Style
+- Prefer concise, visually pleasing responses; avoid tall “walls of text”.
+- Use Russian when the user writes in Russian, unless they ask otherwise.
+- Prefer inline code like `cmd` or `path/file` over fenced code blocks for short snippets.
+- Use fenced code blocks only when they materially improve readability (multi-line code, diffs, structured output).
 
 ## Memory Management — Knowledge Cache
 
 ### Architecture
 2-tier memory system at `~/.pi/agent/prusax0/memory`:
-- **short_term/**: Session snapshots saved manually via `/checkpoint` (no automatic Pi hook is installed yet)
-- **long_term/**: Knowledge cache — 6 category files + index, persisted across sessions
+- **short_term/**: Session snapshots saved manually via `/checkpoint`; the memory extension also writes automatic short-term checkpoints on Pi `session_compact` events.
+- **long_term/**: Persisted markdown knowledge files plus an index. Long-term promotion should be manual/milestone-based, not aggressive during normal conversation.
+- **automatic recall**: `prusax0/extensions/memory` may append up to 3 matching long-term blocks (max 9000 chars) to the system prompt before an agent starts. Disable with `PI_MEMORY_RECALL=0` when needed.
+- **automatic compaction**: `prusax0/extensions/memory` listens for `session_compact` and writes `short_term/auto_compact_*.md`. These files are drafts; review/promote with `/save` rather than treating them as verified long-term memory.
 
-### Knowledge Cache Categories
+### Manual / Milestone Saves
+Do **not** update long-term memory aggressively during the session. Save only when the user asks, a plan/milestone is complete, or the user confirms a stable finding should be remembered. Automatic compaction may create short-term drafts; long-term promotion still requires review.
 
-| File | Stores |
-|------|--------|
-| `queries.md` | Working SQL, BigQuery, PromQL, JQL, CQL queries |
-| `runbooks.md` | Incident resolution, debugging procedures, operational workflows |
-| `investigations.md` | Research results, deep-dive findings, codebase explorations |
-| `patterns.md` | Code patterns, conventions, architecture decisions |
-| `services.md` | Per-service gotchas, configs, quirks |
-| `tools.md` | CLI commands, deployment workflows, useful shortcuts |
-| `_index.md` | Category table, tag cloud, quick lookup |
-
-### Proactive Save Triggers
-Save completed knowledge to the appropriate long-term file **as you work** — do not wait for `/checkpoint` or `/save`:
-
-| When this happens... | Save to... |
-|----------------------|------------|
-| Working query found/built (SQL, JQL, BigQuery, etc.) | `queries.md` |
-| Bug or incident resolved with clear steps | `runbooks.md` |
-| Investigation completed with findings | `investigations.md` |
-| Non-obvious code pattern or gotcha discovered | `patterns.md` or `services.md` |
-| Useful CLI command or workflow discovered | `tools.md` |
-
-### How to Proactive-Save
-1. **Dedup check**: Run the Dedup Protocol (below) against the target file
-2. **If new**: Append a new entry using the standard format (## Title, > Added, > Tags, content, ---)
-3. **If exists**: Update the existing entry (refresh date, add new info)
-4. **Update `_index.md`**: Increment entry count, add new tags to tag cloud
-5. **Silent**: Do NOT announce saves to the user — just do it
+When saving, keep it lightweight: dedup first, append/update a concise entry in the most suitable existing long-term file, update `_index.md`, and briefly mention what was saved if the user requested/confirmed it.
 
 ### Task Lifecycle
 
-**On task start** (new user request):
-1. Extract 2-3 topic keywords from the request
-2. Grep `long_term/*.md` for `Tags:.*keyword` (parallel greps for each keyword)
-3. If no tag matches: broaden to `Grep pattern="keyword"` across `long_term/*.md`
-4. If matches found: read only the matched `## ... ---` blocks (not the whole file). Use cached knowledge instead of re-investigating.
-5. No matches at all? Proceed normally — no need to read any category files.
+**On substantive task start** (new user request):
+0. **Skip manual memory lookup** for trivial/social requests (`hi`, `thanks`, acknowledgements), purely formatting requests, or when memory would clearly not help. Also skip if the automatic recall already provides enough relevant context.
+1. For substantive work, extract 2-3 topic keywords from the request.
+2. Grep `long_term/*.md` only when memory is likely to help.
+3. If matches found: read only the matched `## ... ---` blocks, not whole files.
+4. No useful matches? Proceed normally.
 
 **On task complete** (request fulfilled):
-1. Did this task produce a working query, resolution, finding, pattern, or useful command?
-2. If yes: run the Dedup Protocol (below) against the target category file
-3. Append new entry or update existing. Update `_index.md`.
-4. Only cache completed, verified knowledge — not failed attempts or trivial lookups.
+1. Do not automatically promote findings to long-term memory just because a task completed.
+2. If the task produced reusable knowledge, ask/confirm before saving unless the user already requested memory persistence.
+3. If confirmed: run the Dedup Protocol, append/update the chosen long-term file, and update `_index.md`.
+4. Only cache completed, verified knowledge — not failed attempts, transient session details, or trivial lookups.
 
 ### Dedup Protocol (before every save)
 
-Never read the entire category file for dedup — use rg or Grep only:
+Never read whole long-term files for dedup — use rg/Grep first:
 
-1. **Title grep**: Grep target file for 2-3 distinctive words from the new entry's title
-2. **Content grep**: Grep for a unique fingerprint (table name, error message, file path, or command)
-3. **No matches** → append as new entry
-4. **Match found** → Read just the matched `## ... ---` block, then:
-   - Same topic + same info → **skip** (already cached)
-   - Same topic + new info → **update** (merge content, refresh date, add tags)
-   - Different topic despite keyword overlap → **append** as new entry
-
-### File Splitting (managed by /save)
-
-- Threshold: **50 entries** per category file
-- When `/save` detects a file exceeds 50 entries, split by most frequent primary tag
-- Example: `investigations.md` → `investigations_payments-service.md` + `investigations_frontier.md` + `investigations_general.md`
-- The original file becomes a routing index listing sub-files
-- `_index.md` tracks all sub-files in the category table
-- Grep still works across all files (`long_term/*.md`) regardless of splits
-
-### New Category Creation
-
-If knowledge doesn't fit any existing category AND no keyword matches across all `long_term/*.md`:
-1. Create a new `{topic}.md` file in `long_term/` with the standard header
-2. Add the entry using standard format
-3. Update `_index.md` category table with the new file
+1. **Title grep**: grep for 2-3 distinctive words from the new entry's title.
+2. **Content grep**: grep for a unique fingerprint such as an error message, file path, command, or identifier.
+3. **No matches** → append as new entry.
+4. **Match found** → read just the matched `## ... ---` block, then skip/update/append as appropriate.
 
 ### Standard Entry Format
 ```markdown
@@ -146,19 +77,12 @@ If knowledge doesn't fit any existing category AND no keyword matches across all
 On create: set `Added` only, leave `Updated` blank. On update: keep original `Added`, set `Updated` to today. Purge (step 4.6 of `/save`) checks `Updated` first, then `Added` if no `Updated`.
 
 ### Entry Size
-- Target: ≤ 30 lines per entry
-- If larger, split into a concise entry (core query/command/pattern) + a detailed entry that references it
-
-### Tag Conventions
-- Lowercase, kebab-case: `payments-service`, `sepa`, `faster-payments`
-- Canonical service names: `payments-service`, `frontier`, `nexus`, `open-banking-gateway`
-- Scheme names: `sepa`, `ach`, `bacs`, `becs`, `pad`, `autogiro`, `betalingsservice`, `payto`
-- Generic: `sql`, `debugging`, `deployment`, `grpc`, `pubsub`, `migration`
-- Max 5 tags per entry — pick the most distinctive
+- Target: ≤ 30 lines per entry.
+- If larger, split into a concise entry plus optional details.
 
 ### Mandatory Behaviors
-1. **Before starting any task**: Run the "On task start" protocol above.
-2. **During work**: Proactive-save completed artifacts immediately — only verified knowledge, not in-progress speculation.
-3. **Before context compaction**: If context is getting long, run `/checkpoint` manually to save important session context to `short_term/`; no automatic PreCompact hook is installed in Pi yet.
-4. **On /checkpoint**: Save a comprehensive session snapshot to `short_term/`, plus proactive-save any completed discoveries to the appropriate long-term category files.
-5. **On /save**: Consolidate all `short_term/` files into long-term category files, rebuild `_index.md`, then clean `short_term/`.
+1. **Before starting substantive tasks**: Run the "On substantive task start" protocol above. Do not spend tool calls/tokens on manual memory lookup for trivial prompts.
+2. **During work**: Do not aggressively write long-term memory. Keep findings in-session unless a milestone is reached and the user confirms they should be remembered.
+3. **Before context compaction**: If context is getting long, run `/checkpoint` manually when useful. The memory extension also creates short-term checkpoints automatically on Pi `session_compact` events.
+4. **On /checkpoint**: Save a comprehensive session snapshot to `short_term/`; do not promote to long-term unless the user confirms.
+5. **On /save**: Review `short_term/` files, promote only completed/verified/reusable knowledge to long-term memory, update `_index.md`, then clean promoted short-term files.

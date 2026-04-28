@@ -23,7 +23,7 @@ MAIN_BRANCH="${MAIN_BRANCH:-main}"
 # Files to exclude from review (generated, dependencies, lock files, binaries)
 exclude_patterns() {
     grep -v -E \
-        '(^|/)vendor/|node_modules/|\.bundle/|^Gemfile\.lock$|^yarn\.lock$|^package-lock\.json$|^Cargo\.lock$|\.min\.(js|css)$|^db/structure\.sql$|^db/yugabyte_structure\.sql$|\.rbi$|sorbet/rbi/' \
+        '(^|/)vendor/|node_modules/|\.bundle/|^Gemfile\.lock$|^yarn\.lock$|^package-lock\.json$|^Cargo\.lock$|\.min\.(js|css)$|\.rbi$|sorbet/rbi/' \
         || true
 }
 

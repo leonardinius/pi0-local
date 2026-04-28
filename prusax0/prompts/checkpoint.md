@@ -37,20 +37,4 @@ The file MUST contain ALL of the following sections:
 - Anything else that would be lost if this conversation were compressed
 - Error messages, stack traces, or specific details that matter
 
-After saving the short-term snapshot, also do the following:
-
-## Proactive Long-Term Save
-
-Check if any of these completed artifacts exist in this session and save them to the appropriate long-term category file at `~/.pi/agent/prusax0/memory/long_term/`:
-
-| Completed artifact | Save to |
-|---|---|
-| Working queries (SQL, BigQuery, JQL, etc.) | `queries.md` |
-| Bug/incident resolved with clear steps | `runbooks.md` |
-| Investigation completed with findings | `investigations.md` |
-| Non-obvious code pattern or gotcha | `patterns.md` or `services.md` |
-| Useful CLI command or workflow | `tools.md` |
-
-For each: run the 3-step dedup protocol (Grep 2-3 title keywords + content fingerprint -> decide: skip/update/append). Use the standard entry format (## Title, > Added, > Updated, > Tags, content, ---), and update `_index.md` counts/tags.
-
-After saving, confirm the file path and a brief summary of what was captured (both short-term snapshot and any long-term entries saved).
+After saving, confirm the file path and a brief summary of what was captured. Do not promote anything to long-term memory from `/checkpoint`; use `/save` or explicit user confirmation for milestone-based long-term saves.

@@ -51,7 +51,28 @@ Ubuntu server install decision: use official RTK release artifacts, not cargo. O
 > **Updated**: 2026-04-26
 > **Tags**: pi, git, config, backup
 
-Pi local config is versioned at `~/.pi/agent` with remote `git@github.com:leonardinius/pi0-local.git` on branch `main`. The repo includes global Pi config plus `prusax0` agents, extensions, prompts, hooks, scripts, schemas, and long-term memory. `.gitignore` excludes `auth.json`, `telegram.json`, `sessions/`, `bin/`, `tmp/`, Python caches, and short-term memory snapshots except `.gitkeep`.
+Pi local config is versioned at `~/.pi/agent` with remote `git@github.com:leonardinius/pi0-local.git` on branch `main`. The repo includes global Pi config plus `prusax0` agents, extensions, prompts, hooks, scripts, and long-term memory. `.gitignore` excludes `auth.json`, `telegram.json`, `sessions/`, `bin/`, `tmp/`, Python caches, and short-term memory snapshots except `.gitkeep`.
+
+---
+
+## Work-Pi pi0-local GitHub Deploy Key
+
+> **Added**: 2026-04-27
+> **Tags**: git, github, deploy-key, pi, config
+
+Server `agent` clones the Pi config repo via a repo-scoped GitHub deploy key alias:
+```sshconfig
+Host github.com-pi0-local
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/id_ed25519_pi0_local
+  IdentitiesOnly yes
+```
+Clone command:
+```bash
+git clone git@github.com-pi0-local:leonardinius/pi0-local.git ~/.pi/agent
+```
+Use read-only deploy key for `pi0-local`; use a machine-user SSH key or fine-grained PAT later if multiple repos need access.
 
 ---
 
@@ -97,5 +118,24 @@ Keep tmux, but make Pi lifetime observable: systemd runs a foreground wrapper (`
 > **Tags**: zsh, autocomplete, git, rg, rtk
 
 Installed Homebrew `zsh-completions` and `zsh-autocomplete`. `~/.zshrc` prepends `~/.zsh/completions`, Homebrew `share/zsh/site-functions`, and `share/zsh-completions` to `fpath`, but `zsh-autocomplete` is commented out because its type-ahead suggestions were too aggressive; normal `compinit` is active. Custom RTK completion lives at `~/.zsh/completions/_rtk`; Git and ripgrep completions load as `_git` and `_rg`. If zsh reports insecure directories, run `compaudit`; `/opt/homebrew/share` was fixed with `chmod go-w /opt/homebrew/share`. Rebuild with `rm -f ~/.zcompdump*` and verify via `zsh -ic 'autoload -Uz +X _git _rg _rtk; whence -w _git _rg _rtk'`.
+
+---
+
+## Pi BTW Side-Chat Extension
+
+> **Added**: 2026-04-28
+> **Updated**: 2026-04-28
+> **Tags**: pi, extension, btw, side-chat, tools
+
+Install Armin Ronacher's `btw.ts` side-chat extension globally by downloading the raw file to `~/.pi/agent/extensions/btw.ts` (auto-discovered) and restart Pi or run `/reload`:
+
+```bash
+mkdir -p ~/.pi/agent/extensions
+curl -fL https://raw.githubusercontent.com/mitsuhiko/agent-stuff/refs/heads/main/extensions/btw.ts -o ~/.pi/agent/extensions/btw.ts
+```
+
+`pi install https://raw.githubusercontent.com/.../btw.ts` may incorrectly try to `git clone` the raw URL and fail with GitHub 404. The extension registers `/btw`; source review shows it creates an in-memory side agent session using the current model/thinking level and `codingTools`, persists BTW entries via `pi.appendEntry`, and should be treated as trusted arbitrary-code extension.
+
+Pi 0.70.5's `Agent` no longer has `replaceMessages`; if `/btw <text>` crashes with `TypeError: session.agent.replaceMessages is not a function`, patch the seed step in `~/.pi/agent/extensions/btw.ts` to `session.agent.state.messages = seedMessages as typeof session.state.messages;`.
 
 ---

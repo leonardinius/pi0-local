@@ -7,6 +7,54 @@ Entry format: use a level-2 heading (for example, `## Descriptive Title`), metad
 
 ---
 
+## Work-Pi Node and User-Local Pi Install
+
+> **Added**: 2026-04-28
+> **Tags**: node, pi, npm, deployment, work-pi
+
+On Ubuntu Work-Pi, install NodeSource Node 22 as root, then Pi core as `agent` with user-local npm prefix:
+```bash
+curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
+apt install -y nodejs
+sudo -u agent -H bash -lc 'mkdir -p ~/.npm-global && npm config set prefix ~/.npm-global'
+sudo -u agent -H bash -lc 'grep -q "npm globals" ~/.profile || printf "\n# user-local npm globals\nexport PATH=\"$HOME/.npm-global/bin:$PATH\"\n" >> ~/.profile'
+sudo -u agent -H bash -lc 'export PATH="$HOME/.npm-global/bin:$PATH"; npm install -g @mariozechner/pi-coding-agent@0.70.2'
+```
+Verify: `node -v`, `npm -v`, and as agent `which pi` -> `/home/agent/.npm-global/bin/pi`, `pi --version` -> `0.70.2`.
+
+---
+
+## Work-Pi 2G Swap Setup
+
+> **Added**: 2026-04-27
+> **Tags**: swap, ubuntu, deployment, work-pi
+
+For ~4GB Ubuntu Work-Pi hosts with no swap:
+```bash
+fallocate -l 2G /swapfile || dd if=/dev/zero of=/swapfile bs=1M count=2048
+chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile
+grep -qE '^\s*/swapfile\s+' /etc/fstab || echo '/swapfile none swap sw 0 0' >> /etc/fstab
+printf 'vm.swappiness=10\n' >/etc/sysctl.d/99-work-pi.conf
+sysctl --system
+```
+Verify: `free -h` shows ~2Gi swap, `swapon --show` has `/swapfile`, `cat /proc/sys/vm/swappiness` is `10`.
+
+---
+
+## Work-Pi SSH Bootstrap and Hardening Checklist
+
+> **Added**: 2026-04-27
+> **Tags**: ssh, sudo, deployment, security
+
+Safe order for Work-Pi SSH bootstrap:
+1. Create `agent`, add sudo if accepted, and install `/etc/sudoers.d/90-agent-nopasswd`; validate with `visudo -c`.
+2. Copy root `authorized_keys` to `/home/agent/.ssh/authorized_keys` with `700` dir and `600` file ownership `agent:agent`.
+3. Before hardening, verify from a separate local terminal: `ssh -i ~/.ssh/id_ed25519_remote_pi -o IdentitiesOnly=yes agent@HOST 'whoami; groups; sudo -n true && echo sudo-ok'`.
+4. Only then set `PermitRootLogin no`, `PasswordAuthentication no`, `PubkeyAuthentication yes`, run `sshd -t`, and `systemctl restart ssh`.
+5. Confirm root fails with `BatchMode=yes` and agent still works. Keep the original root session open until both tests pass.
+
+---
+
 ## Pi Config Permissions Without Breaking Scripts
 
 > **Added**: 2026-04-26
@@ -98,5 +146,15 @@ For a systemd/tmux Pi Telegram agent, do setup before enabling auto-start:
 3. Immediately DM the bot `/start`; first user becomes the exclusive owner (`allowedUserId` in `~/.pi/agent/telegram.json`).
 4. Stop that manual session cleanly, then enable systemd wrapper that starts `pi '/telegram-connect'`.
 5. Do not run two Pi sessions connected to the same bot token; polling is session-local.
+
+---
+
+## RTK Deb Fails on Older Ubuntu Due to libc6 Dependency
+
+> **Added**: 2026-04-28
+> **Updated**: 2026-04-28
+> **Tags**: rtk, ubuntu, libc6, arm64, deployment
+
+If `sudo apt install ./rtk_0.37.2-1_amd64.deb` fails with `Depends: libc6:amd64 (>= 2.39)`, use a release tarball instead and match `uname -m`. For `x86_64`: `rtk-x86_64-unknown-linux-musl.tar.gz`. For `aarch64`/ARM64: `rtk-aarch64-unknown-linux-gnu.tar.gz`; using x86_64 on ARM causes `Exec format error`. Install with `tar -xzf ... && sudo install -m 0755 rtk /usr/local/bin/rtk`, then verify `rtk --version && which rtk`; continue `rtk config --create && rtk telemetry disable && rtk gain` as `agent`.
 
 ---

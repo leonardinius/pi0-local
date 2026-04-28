@@ -180,12 +180,26 @@ pi
 
 ### 6. RTK
 
-Ubuntu amd64:
+Check CPU architecture first. Prefer tarballs because the `.deb` can require `libc6 >= 2.39` and fail on older Ubuntu releases.
+
+For x86_64/amd64:
 
 ```bash
 cd /tmp
-curl -fLO https://github.com/rtk-ai/rtk/releases/download/v0.37.2/rtk_0.37.2-1_amd64.deb
-sudo apt install -y ./rtk_0.37.2-1_amd64.deb
+curl -fLO https://github.com/rtk-ai/rtk/releases/download/v0.37.2/rtk-x86_64-unknown-linux-musl.tar.gz
+tar -xzf rtk-x86_64-unknown-linux-musl.tar.gz
+sudo install -m 0755 rtk /usr/local/bin/rtk
+rtk --version
+which rtk
+```
+
+For arm64/aarch64:
+
+```bash
+cd /tmp
+curl -fLO https://github.com/rtk-ai/rtk/releases/download/v0.37.2/rtk-aarch64-unknown-linux-gnu.tar.gz
+tar -xzf rtk-aarch64-unknown-linux-gnu.tar.gz
+sudo install -m 0755 rtk /usr/local/bin/rtk
 rtk --version
 which rtk
 ```
@@ -508,9 +522,9 @@ EOF
 - [ ] Step 2: Bootstrap server, user, SSH, and sudo
 - [ ] Step 3: Configure swap if needed
 - [ ] Step 4: Install Node and user-local Pi core
-- [ ] Step 5: Clone Pi config and verify model auth
-- [ ] Step 6: Install and configure RTK
-- [ ] Step 7: Install Telegram package
+- [x] Step 5: Clone Pi config and verify model auth
+- [x] Step 6: Install and configure RTK
+- [x] Step 7: Install Telegram package
 - [ ] Step 8: Run manual Telegram setup and owner pairing
 - [ ] Step 9: Apply secret permissions and tmux config
 - [ ] Step 10: Install systemd/tmux monitor and verify restart behavior
