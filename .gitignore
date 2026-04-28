@@ -1,6 +1,7 @@
 # Secrets / auth tokens
 auth.json
 telegram.json
+settings.json
 
 # Runtime-generated Pi state
 sessions/
