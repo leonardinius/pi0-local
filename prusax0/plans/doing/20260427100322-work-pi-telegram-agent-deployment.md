@@ -518,17 +518,17 @@ EOF
 
 ## Progress
 
-- [ ] Step 1: Local preflight and push portable Pi config
-- [ ] Step 2: Bootstrap server, user, SSH, and sudo
-- [ ] Step 3: Configure swap if needed
-- [ ] Step 4: Install Node and user-local Pi core
+- [x] Step 1: Local preflight and push portable Pi config
+- [x] Step 2: Bootstrap server, user, SSH, and sudo
+- [x] Step 3: Configure swap if needed
+- [x] Step 4: Install Node and user-local Pi core
 - [x] Step 5: Clone Pi config and verify model auth
 - [x] Step 6: Install and configure RTK
 - [x] Step 7: Install Telegram package
-- [ ] Step 8: Run manual Telegram setup and owner pairing
-- [ ] Step 9: Apply secret permissions and tmux config
-- [ ] Step 10: Install systemd/tmux monitor and verify restart behavior
-- [ ] Step 11: Configure firewall
+- [x] Step 8: Run manual Telegram setup and owner pairing
+- [x] Step 9: Apply secret permissions and tmux config
+- [x] Step 10: Install systemd/tmux monitor and verify restart behavior
+- [x] Step 11: Configure firewall
 - [ ] Step 12: Install Docker and accept MVP risk
 - [ ] Step 13: Verify logs and health checks
 

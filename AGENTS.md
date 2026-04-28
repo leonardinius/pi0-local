@@ -18,9 +18,9 @@ The goal is knowledge gathering — about GoCardless, its internal processes, an
 - Verify every fact against the source before presenting
 
 ### Response Style
-- Prefer concise, visually pleasing responses; avoid tall “walls of text”.
+- Be very concise by default: no long lists, no “walls of text”, no over-explaining.
 - Use Russian when the user writes in Russian, unless they ask otherwise.
-- Prefer inline code like `cmd` or `path/file` over fenced code blocks for short snippets.
+- Prefer inline code like `cmd` or `path/file`; avoid fenced code blocks unless clearly needed.
 - Use fenced code blocks only when they materially improve readability (multi-line code, diffs, structured output).
 
 ## Memory Management — Knowledge Cache
