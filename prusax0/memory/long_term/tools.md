@@ -51,28 +51,7 @@ Ubuntu server install decision: use official RTK release artifacts, not cargo. O
 > **Updated**: 2026-04-26
 > **Tags**: pi, git, config, backup
 
-Pi local config is versioned at `~/.pi/agent` with remote `git@github.com:leonardinius/pi0-local.git` on branch `main`. The repo includes global Pi config plus `prusax0` agents, extensions, prompts, hooks, scripts, and long-term memory. `.gitignore` excludes `auth.json`, `telegram.json`, `sessions/`, `bin/`, `tmp/`, Python caches, and short-term memory snapshots except `.gitkeep`.
-
----
-
-## Work-Pi pi0-local GitHub Deploy Key
-
-> **Added**: 2026-04-27
-> **Tags**: git, github, deploy-key, pi, config
-
-Server `agent` clones the Pi config repo via a repo-scoped GitHub deploy key alias:
-```sshconfig
-Host github.com-pi0-local
-  HostName github.com
-  User git
-  IdentityFile ~/.ssh/id_ed25519_pi0_local
-  IdentitiesOnly yes
-```
-Clone command:
-```bash
-git clone git@github.com-pi0-local:leonardinius/pi0-local.git ~/.pi/agent
-```
-Use read-only deploy key for `pi0-local`; use a machine-user SSH key or fine-grained PAT later if multiple repos need access.
+Pi local config is versioned at `~/.pi/agent` with remote `git@github.com:leonardinius/pi0-local.git` on branch `main`. The repo includes global Pi config plus `prusax0` agents, extensions, prompts, hooks, scripts, schemas, and long-term memory. `.gitignore` excludes `auth.json`, `telegram.json`, `sessions/`, `bin/`, `tmp/`, Python caches, and short-term memory snapshots except `.gitkeep`.
 
 ---
 
@@ -121,21 +100,39 @@ Installed Homebrew `zsh-completions` and `zsh-autocomplete`. `~/.zshrc` prepends
 
 ---
 
-## Pi BTW Side-Chat Extension
+## Safe git pull with autostash and quick conflict resolution
 
 > **Added**: 2026-04-28
-> **Updated**: 2026-04-28
-> **Tags**: pi, extension, btw, side-chat, tools
+> **Tags**: git, workflow, conflicts
 
-Install Armin Ronacher's `btw.ts` side-chat extension globally by downloading the raw file to `~/.pi/agent/extensions/btw.ts` (auto-discovered) and restart Pi or run `/reload`:
+Recommended one-liner that stashes uncommitted work, rebases on origin, and reapplies your changes:
 
 ```bash
-mkdir -p ~/.pi/agent/extensions
-curl -fL https://raw.githubusercontent.com/mitsuhiko/agent-stuff/refs/heads/main/extensions/btw.ts -o ~/.pi/agent/extensions/btw.ts
+git pull --rebase --autostash
 ```
 
-`pi install https://raw.githubusercontent.com/.../btw.ts` may incorrectly try to `git clone` the raw URL and fail with GitHub 404. The extension registers `/btw`; source review shows it creates an in-memory side agent session using the current model/thinking level and `codingTools`, persists BTW entries via `pi.appendEntry`, and should be treated as trusted arbitrary-code extension.
+Manual, explicit steps:
 
-Pi 0.70.5's `Agent` no longer has `replaceMessages`; if `/btw <text>` crashes with `TypeError: session.agent.replaceMessages is not a function`, patch the seed step in `~/.pi/agent/extensions/btw.ts` to `session.agent.state.messages = seedMessages as typeof session.state.messages;`.
+```bash
+git stash push -u -m "pre-pull $(date -Iseconds)"
+git pull --rebase
+# If no conflicts:
+git stash pop
+```
+
+If conflicts occur during pull --rebase:
+- List conflicted files: `git diff --name-only --diff-filter=U`
+- Keep your version: `git checkout --ours -- <path>`; take upstream: `git checkout --theirs -- <path>`
+- Mark resolved and continue: `git add <path>` then `git rebase --continue`
+- Abort rebase: `git rebase --abort`
+
+If conflicts occur on `git stash pop`:
+- Resolve with `--ours/--theirs` as above, then `git add <path>`; no "continue" step is needed.
+
+Make it default:
+```bash
+git config --global pull.rebase true
+git config --global rebase.autoStash true
+```
 
 ---
