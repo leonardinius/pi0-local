@@ -6,8 +6,9 @@ import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
 const ROOT = path.join(os.homedir(), ".pi", "agent", "prusax0");
 const LONG_TERM_DIR = path.join(ROOT, "memory", "long_term");
 const SHORT_TERM_DIR = path.join(ROOT, "memory", "short_term");
-const MAX_BLOCKS = Number(process.env.PI_MEMORY_RECALL_BLOCKS ?? "3");
-const MAX_CHARS = Number(process.env.PI_MEMORY_RECALL_CHARS ?? "9000");
+const MAX_BLOCKS = Number(process.env.PI_MEMORY_RECALL_BLOCKS ?? "2");
+const MAX_CHARS = Number(process.env.PI_MEMORY_RECALL_CHARS ?? "5000");
+const MIN_SCORE = Number(process.env.PI_MEMORY_RECALL_MIN_SCORE ?? "5");
 
 const STOPWORDS = new Set([
 	"about",
@@ -17,32 +18,40 @@ const STOPWORDS = new Set([
 	"and",
 	"any",
 	"are",
+	"ask",
 	"but",
 	"can",
 	"could",
+	"current",
 	"does",
 	"for",
 	"from",
 	"have",
 	"how",
 	"into",
+	"issue",
 	"list",
 	"more",
 	"not",
 	"now",
+	"only",
 	"our",
 	"please",
 	"proceed",
+	"question",
 	"should",
+	"task",
 	"that",
 	"the",
 	"then",
 	"this",
 	"to",
+	"today",
 	"use",
 	"what",
 	"when",
 	"where",
+	"work",
 	"with",
 	"would",
 	"you",
@@ -128,7 +137,7 @@ function recallMemory(prompt: string): string | undefined {
 			}
 		})
 		.map((block) => ({ block, score: scoreBlock(block, keywords) }))
-		.filter((item) => item.score > 0)
+		.filter((item) => item.score >= MIN_SCORE)
 		.sort((a, b) => b.score - a.score)
 		.slice(0, MAX_BLOCKS);
 
@@ -204,6 +213,7 @@ export default function (pi: ExtensionAPI) {
 				"Pi memory extension status",
 				"",
 				`- Recall hook: ${process.env.PI_MEMORY_RECALL === "0" ? "disabled" : "enabled"}`,
+				`- Recall limits: ${MAX_BLOCKS} block(s), ${MAX_CHARS} chars, min score ${MIN_SCORE}`,
 				`- Compaction checkpoints: ${process.env.PI_MEMORY_COMPACTION_CHECKPOINT === "0" ? "disabled" : "enabled"}`,
 				`- Long-term category files: ${longTermCount}`,
 				`- Pending short-term memory files: ${shortTermCount}`,

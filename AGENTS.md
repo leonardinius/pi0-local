@@ -4,7 +4,7 @@
 
 **Subagent execution rules:** Route pipeline steps by role name (`Architect` → `architect`, `Coder` → `coder`, `Refactorer` → `refactorer`, `Reviewer` → `reviewer`). The parent/orchestrator owns plan progress edits. Do not run mutation-capable subagents in parallel in the same worktree; this setup does not create git worktrees automatically.
 
-**RTK note:** The RTK extension may rewrite `bash` commands for compact output. Use `RTK_DISABLE=1 <command>` or append `# rtk:off` when exact raw command behavior/output matters, especially while debugging test failures.
+**RTK note:** Use RTK by default for compact output, including routine `git status`/`git diff` summaries. Fall back to `RTK_DISABLE=1 <command>` or `# rtk:off` only when exact raw/uncompressed behavior matters: native `find` compound predicates/actions (`-o`, `-not`, `-exec`, `-print`), flag-heavy GNU `grep` forms, or raw patch output for apply/copy.
 
 ## Collaboration Approach
 
@@ -29,7 +29,7 @@ The goal is knowledge gathering — about GoCardless, its internal processes, an
 2-tier memory system at `~/.pi/agent/prusax0/memory`:
 - **short_term/**: Session snapshots saved manually via `/checkpoint`; the memory extension also writes automatic short-term checkpoints on Pi `session_compact` events.
 - **long_term/**: Persisted markdown knowledge files plus an index. Long-term promotion should be manual/milestone-based, not aggressive during normal conversation.
-- **automatic recall**: `prusax0/extensions/memory` may append up to 3 matching long-term blocks (max 9000 chars) to the system prompt before an agent starts. Disable with `PI_MEMORY_RECALL=0` when needed.
+- **automatic recall**: `prusax0/extensions/memory` may append up to 2 matching long-term blocks (max 5000 chars, minimum score threshold) to the system prompt before an agent starts. Disable with `PI_MEMORY_RECALL=0` when needed.
 - **automatic compaction**: `prusax0/extensions/memory` listens for `session_compact` and writes `short_term/auto_compact_*.md`. These files are drafts; review/promote with `/save` rather than treating them as verified long-term memory.
 
 ### Manual / Milestone Saves
@@ -40,11 +40,10 @@ When saving, keep it lightweight: dedup first, append/update a concise entry in 
 ### Task Lifecycle
 
 **On substantive task start** (new user request):
-0. **Skip manual memory lookup** for trivial/social requests (`hi`, `thanks`, acknowledgements), purely formatting requests, or when memory would clearly not help. Also skip if the automatic recall already provides enough relevant context.
-1. For substantive work, extract 2-3 topic keywords from the request.
-2. Grep `long_term/*.md` only when memory is likely to help.
-3. If matches found: read only the matched `## ... ---` blocks, not whole files.
-4. No useful matches? Proceed normally.
+0. Rely on automatic memory recall by default.
+1. Skip manual memory lookup for trivial/social requests, formatting-only requests, or when memory clearly will not help.
+2. Use manual `rg`/`/memory recall` only for tasks that clearly need prior history or when automatic recall looks insufficient.
+3. If manually searching, read only matched `## ... ---` blocks, not whole files.
 
 **On task complete** (request fulfilled):
 1. Do not automatically promote findings to long-term memory just because a task completed.
@@ -74,15 +73,15 @@ Never read whole long-term files for dedup — use rg/Grep first:
 ---
 ```
 
-On create: set `Added` only, leave `Updated` blank. On update: keep original `Added`, set `Updated` to today. Purge (step 4.6 of `/save`) checks `Updated` first, then `Added` if no `Updated`.
+On create: set `Added` only, leave `Updated` blank. On update: keep original `Added`, set `Updated` to today.
 
 ### Entry Size
 - Target: ≤ 30 lines per entry.
 - If larger, split into a concise entry plus optional details.
 
 ### Mandatory Behaviors
-1. **Before starting substantive tasks**: Run the "On substantive task start" protocol above. Do not spend tool calls/tokens on manual memory lookup for trivial prompts.
+1. **Before starting substantive tasks**: Follow the "On substantive task start" protocol above. Do not spend tool calls/tokens on manual memory lookup unless prior history is likely useful.
 2. **During work**: Do not aggressively write long-term memory. Keep findings in-session unless a milestone is reached and the user confirms they should be remembered.
 3. **Before context compaction**: If context is getting long, run `/checkpoint` manually when useful. The memory extension also creates short-term checkpoints automatically on Pi `session_compact` events.
-4. **On /checkpoint**: Save a comprehensive session snapshot to `short_term/`; do not promote to long-term unless the user confirms.
+4. **On /checkpoint**: Save a lightweight session snapshot to `short_term/`; do not promote to long-term unless the user confirms.
 5. **On /save**: Review `short_term/` files, promote only completed/verified/reusable knowledge to long-term memory, update `_index.md`, then clean promoted short-term files.

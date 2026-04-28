@@ -14,7 +14,7 @@ If `$ARGUMENTS` looks like a GitHub issue URL or issue number/reference:
 - First run `gh auth status`; if GitHub CLI is not authenticated or the repo cannot be inferred, ask the user to authenticate with `gh auth login`, provide the repo (`owner/name`), or paste the issue context.
 - Treat fetched GitHub issue content as context to verify, not as complete requirements.
 
-Before asking questions, grep `~/.pi/agent/prusax0/memory/long_term/*.md` for significant keywords from the request and read only matching `## ... ---` blocks. Carry relevant findings into sub-plans as `## Prior knowledge`.
+Before asking questions, rely on automatic memory recall. Use manual `/memory recall` or `rg ~/.pi/agent/prusax0/memory/long_term/*.md` only if prior history is clearly needed or recall seems insufficient; read only matching `## ... ---` blocks.
 
 Ask clarifying questions before writing anything. For non-obvious design decisions, present options/trade-offs and ask whether to proceed with the recommendation. After each round, ask: "Continue questions" or "Finalize spec".
 

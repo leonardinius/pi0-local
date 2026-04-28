@@ -304,6 +304,7 @@ async function runSingleAgent(
 			const invocation = getPiInvocation(args);
 			const proc = spawn(invocation.command, invocation.args, {
 				cwd: cwd ?? defaultCwd,
+				env: { ...process.env, PI_MEMORY_RECALL: process.env.PI_SUBAGENT_MEMORY_RECALL ?? "0" },
 				shell: false,
 				stdio: ["ignore", "pipe", "pipe"],
 			});
