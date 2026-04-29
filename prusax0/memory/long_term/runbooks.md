@@ -138,3 +138,15 @@ sendTextReply: (message, text) =>
 After patching, reload/restart Pi because running extension code is already loaded.
 
 ---
+
+## Work-Pi Docker Project Harness
+
+> **Added**: 2026-04-29
+> **Updated**:
+> **Tags**: docker, project, env, compose, deployment
+
+Server harness lives at `/home/agent/work/agent/bin/project`; source is tracked as `prusax0/scripts/project` in the Pi config repo. Projects live under `/home/agent/work/projects/<name>` or symlink there via `project init`.
+
+Key commands: `project new NAME [static|node] [PORT]`, `project init NAME [static|node|auto] [PORT] [PATH]`, `project up/down/logs/ps/status/health NAME`. `.env` is chmod `600`, `.env.example` is committed, and generated Compose ports bind to `127.0.0.1` by default.
+
+---

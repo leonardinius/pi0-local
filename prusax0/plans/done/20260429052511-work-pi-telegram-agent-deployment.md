@@ -529,8 +529,8 @@ EOF
 - [x] Step 9: Apply secret permissions and tmux config
 - [x] Step 10: Install systemd/tmux monitor and verify restart behavior
 - [x] Step 11: Configure firewall
-- [ ] Step 12: Install Docker and accept MVP risk
-- [ ] Step 13: Verify logs and health checks
+- [x] Step 12: Install Docker and accept MVP risk
+- [x] Step 13: Verify logs and health checks
 
 ## Dependencies
 
