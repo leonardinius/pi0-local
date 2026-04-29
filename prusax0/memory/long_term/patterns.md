@@ -25,3 +25,15 @@ For Pi, keep semantic long-term memory extraction instruction-driven/manual, but
 User prefers concise Russian responses with compact rendering, but still wants visible thinking-mode structure when useful. Keep reasoning/plan/checks brief, use short bullets and inline commands where possible, and avoid unnecessarily tall code blocks or long paragraphs.
 
 ---
+
+## Telegram: авто‑подтверждение и приветственная фраза
+
+> **Added**: 2026-04-29
+> **Tags**: telegram, preferences, response-style, echo
+
+- В Telegram‑сессиях по умолчанию начинаю ответы с «Принял, работаем.»
+- Эхо‑подтверждение: повторяю текст каждого входящего сообщения строкой «Подтверждаю: …».
+- Отключение: по запросу в сессии (например: «отключи авто‑подтверждение» или «убери приветствие»). Распространяется с момента изменения.
+- Область действия: постоянная настройка по умолчанию для ваших Telegram‑сессий, если не сказано иное.
+
+---

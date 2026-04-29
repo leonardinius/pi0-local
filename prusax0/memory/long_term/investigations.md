@@ -39,3 +39,25 @@ Key preflight findings for deploying the local Pi workflow as a Telegram bot on 
 - `/ping` is not a built-in pi-telegram command; use `/status`, `/telegram-status`, or implement a ping command.
 
 ---
+
+## pi-telegram /tgreload — Root Cause and Final Fix
+
+> **Added**: 2026-04-29
+> **Tags**: pi, telegram, tgreload, troubleshooting, patch, spawn, timeout
+
+Symptom: `/tgreload` часто падал с `Command failed: ... pi --no-session --offline -p ping`, иногда `killed=true signal=SIGTERM`.
+
+Findings:
+- Разные окружения (systemd vs bash) → PATH/WorkingDirectory расходились; иногда pi не тот.
+- Smoke вызывался через `execFile` с таймаутом; внутри активной Pi-сессии дочерний процесс стабильно не успевал выйти и получал SIGTERM, хотя «pong» появлялся мгновенно при ручном запуске.
+
+Fix:
+- Нормализовали env: фиксированный PATH, абсолютный pi (`~/.npm-global/bin/pi`), `PI_TELEGRAM_AUTOSTART=0`, `PI_OFFLINE=1`, `RTK_DISABLE=1`, `PI_TUI=0`, `PI_MEMORY_RECALL=0`.
+- Таймаут smoke → 60s, fallback `cwd` на `$HOME`.
+- Критичный шаг: переписали smoke на `spawn` со стримингом и ранним успехом по появлению `pong` в stdout (не ждём полного выхода процесса).
+
+Result: `/tgreload` стабильно проходит: `smoke test passed; reloading`.
+
+Paths: `~/.npm-global/lib/node_modules/@llblab/pi-telegram/lib/runtime.ts` (runPiPingSmokeTest).
+
+---

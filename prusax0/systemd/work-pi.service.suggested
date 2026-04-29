@@ -1,0 +1,27 @@
+# Suggested user service unit for Work-Pi (Telegram bridge)
+# Install as: ~/.config/systemd/user/work-pi.service
+# Then: systemctl --user daemon-reload && systemctl --user enable --now work-pi
+
+[Unit]
+Description=Work-Pi (Pi Telegram bridge)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# Unify PATH and environment for the service
+EnvironmentFile=%h/.pi/agent/env/work-pi.env
+# Ensure the same working directory as interactive runs
+WorkingDirectory=%h/work
+# Start Pi and connect Telegram polling
+ExecStart=%h/.npm-global/bin/pi /telegram-connect
+Restart=on-failure
+RestartSec=3
+# Hardening (optional)
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=read-only
+
+[Install]
+WantedBy=default.target

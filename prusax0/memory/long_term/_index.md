@@ -15,6 +15,8 @@ Long-term memory is a lightweight set of markdown files under `~/.pi/agent/prusa
 
 ## Search
 
+autocomplete, autostart, backup, config, deployment, docker, env, extension, git, gitignore, health, hooks, logs, debugging, memory, openai, permissions, pi, plan, project, prompts, rg, rtk, secrets, security, setup, ssh, spawn, subagents, sudo, systemd, telegram, timeout, tmux, token-savings, troubleshooting, workflow, zsh
+
 Prefer direct grep over browsing full files:
 
 - `rg "Tags:.*keyword|keyword" ~/.pi/agent/prusax0/memory/long_term/*.md`

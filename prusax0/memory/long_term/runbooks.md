@@ -150,3 +150,50 @@ Server harness lives at `/home/agent/work/agent/bin/project`; source is tracked 
 Key commands: `project new NAME [static|node] [PORT]`, `project init NAME [static|node|auto] [PORT] [PATH]`, `project up/down/logs/ps/status/health NAME`. `.env` is chmod `600`, `.env.example` is committed, and generated Compose ports bind to `127.0.0.1` by default.
 
 ---
+
+## Pi Telegram Autostart and Smoke Tests
+
+> **Added**: 2026-04-28
+> **Tags**: pi, telegram, autostart, env, debugging
+
+Observed behavior and cause
+- The Telegram bridge autostarts polling on session start if a bot token is present and PI_TELEGRAM_AUTOSTART is not an explicit "false" value.
+- Current logic (index.ts): enabled unless PI_TELEGRAM_AUTOSTART is one of "0", "false", "no" (case-insensitive). PI_OFFLINE is not considered.
+- Result: even a quick check like `pi --no-session --offline -p ping` can start Telegram polling in that transient process and interfere with the main bot session (deleteWebhook, polling ownership), unless env is overridden.
+
+Safe ways to run smoke tests/secondary pi invocations
+- Always disable Telegram autostart for auxiliary runs: `PI_TELEGRAM_AUTOSTART=0 pi --no-session --offline -p ping`.
+- The built-in `/tgreload` smoke test already forces a safe env when it shell-execs Pi: it sets PI_TELEGRAM_AUTOSTART=0 and PI_OFFLINE=1.
+
+Verification
+- Main process: `PI_TELEGRAM_AUTOSTART=1 pi` (or set in systemd env) — should own polling.
+- Quick test: `PI_TELEGRAM_AUTOSTART=0 pi --no-session --offline -p ping` — should not touch Telegram state.
+
+---
+
+## pi-telegram /tgreload — Debug & Troubleshooting
+
+> **Added**: 2026-04-28
+> **Tags**: pi, telegram, debugging, troubleshooting, tgreload
+
+Symptoms
+- `/tgreload` отвечает ошибкой или ничего не делает
+- В статусе/логах: `telegram error ... skipping Telegram update ...`, `Cannot ...`, или зависание > 15с
+
+Fast checks
+- Вручную запусти smoke: `PI_TELEGRAM_AUTOSTART=0 PI_OFFLINE=1 pi --no-session --offline -p ping` — должен дать `Pong. How can I help?`
+- Убедись, что в `index.ts` правильно проброшен `sendTextReply(message, text)` для автоперезагрузки
+- Проверь, что только один процесс Pi владеет polling этим токеном бота
+
+Common causes
+- Неправильная передача аргументов в `sendTextReply` (текст undefined)
+- Автоподъём polling во вспомогательном процессе во время smoke → конфликт с основным процессом
+- Медленный старт/IO → smoke таймаут 15с не успевает
+- Сетевая блокировка до `api.telegram.org` или нестабильный DNS
+
+Logs & signals
+- `journalctl -u work-pi -f` или `tmux capture-pane -pt work-pi -S -200`
+- `/status` в Telegram; ищи "telegram error"
+- `curl https://api.telegram.org/bot$BOT_TOKEN/getMe`
+
+---
