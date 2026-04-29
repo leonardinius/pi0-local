@@ -7,7 +7,6 @@
 
 | File | Entries | Last Updated | Description |
 |------|---------|--------------|-------------|
-| `queries.md` | 0 | — | Working SQL, BigQuery, PromQL, JQL, CQL queries |
 | `runbooks.md` | 8 | 2026-04-28 | Incident resolution, debugging procedures, operational workflows |
 | `investigations.md` | 2 | 2026-04-26 | Research results, deep-dive findings, codebase explorations |
 | `patterns.md` | 1 | 2026-04-26 | Code patterns, conventions, architecture decisions |
@@ -22,7 +21,6 @@ autocomplete, backup, config, deployment, docker, env, extension, git, gitignore
 
 | Looking for... | Check file | Tags to grep |
 |----------------|-----------|--------------|
-| A query I used before | `queries.md` | sql, bigquery, jql, promql |
 | How to fix/debug X | `runbooks.md` | incident, debugging, fix |
 | What I learned about X | `investigations.md` | research, exploration |
 | How code pattern X works | `patterns.md` | pattern, convention |
