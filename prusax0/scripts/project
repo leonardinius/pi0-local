@@ -272,12 +272,15 @@ case "$cmd" in
     port="$(env_value "$d/.env" APP_PORT)"
     [[ -n "$port" ]] || { echo "APP_PORT missing in $d/.env" >&2; exit 1; }
     path="${2:-/}"
+    url="http://127.0.0.1:$port$path"
     for i in $(seq 1 10); do
-      if curl -fsS -m 5 -o /dev/null -w "http=%{http_code} time=%{time_total}s url=http://127.0.0.1:$port$path\n" "http://127.0.0.1:$port$path"; then
+      if out="$(curl -fsS -m 5 -o /dev/null -w "http=%{http_code} time=%{time_total}s url=$url\n" "$url" 2>/dev/null)"; then
+        echo "$out"
         exit 0
       fi
       sleep 1
     done
+    echo "health failed: $url" >&2
     exit 1
     ;;
   env) need_project "${1:-}"; d="$(dir_for "$1")"; echo "$d/.env"; grep -E "^[A-Z0-9_]+=" "$d/.env" | cut -d= -f1 ;;
