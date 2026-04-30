@@ -52,9 +52,17 @@ ensure_kv() {
 }
 
 next_port() {
-  local start="$1" p
+  local start="$1" p used_by_env used_by_socket
   for p in $(seq "$start" 18999); do
-    if ! find -L "$ROOT" -maxdepth 2 -name .env -type f -exec grep -q "^APP_PORT=$p$" {} + 2>/dev/null && ! ss -H -ltn 2>/dev/null | awk '{print $4}' | grep -q ":$p$"; then
+    used_by_env=0
+    if [[ -n "$(find -L "$ROOT" -maxdepth 2 -name .env -type f -exec grep -l "^APP_PORT=$p$" {} + 2>/dev/null | head -n 1)" ]]; then
+      used_by_env=1
+    fi
+    used_by_socket=0
+    if ss -H -ltn 2>/dev/null | awk '{print $4}' | grep -q ":$p$"; then
+      used_by_socket=1
+    fi
+    if [[ "$used_by_env" == 0 && "$used_by_socket" == 0 ]]; then
       echo "$p"
       return 0
     fi
