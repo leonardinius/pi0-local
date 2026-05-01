@@ -7,6 +7,9 @@ settings.json
 sessions/
 bin/
 tmp/
+bridge.log
+prusax0/memory/short_term/
+telegram.json.backup.*
 
 # Python/build artifacts
 __pycache__/
