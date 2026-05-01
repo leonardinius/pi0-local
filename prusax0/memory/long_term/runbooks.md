@@ -226,3 +226,21 @@ Current model uses shared tunnel + per-app hostnames.
 Validation pattern for published apps: `no auth -> 401`, `with auth -> 200` on public URL.
 
 ---
+
+## pi-telegram /quit — Handler Wiring and Fail Feedback
+
+> **Added**: 2026-05-01
+> **Tags**: pi, telegram, quit, tmux, debugging
+
+Symptom: Telegram `/quit` looked ignored (no shutdown message, no session kill).
+
+Root cause: command action `quit` existed, but `handleQuit` was not passed into `createTelegramCommandHandler(...)` inside `createTelegramCommandHandlerTargetRuntime`, so runtime had no quit handler bound.
+
+Fix:
+- In `lib/commands.ts`, wire `handleQuit: deps.handleQuit` in command handler construction.
+- Keep user-visible ack before shutdown attempt: `Принял йаду ☠️ Умираю красиво...`.
+- Add failure feedback on kill error: `Не смог умереть с первого раза: <error>`.
+
+Operational note: after patching extension files, reload the active Pi runtime process; service wrapper restart alone may not replace already-running tmux Pi process code.
+
+---
