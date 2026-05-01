@@ -13,19 +13,15 @@ If a GitHub issue URL/number/reference is provided, use it for branch naming, co
 # Preconditions
 
 - Use `git`/`gh` directly, or `rtk git` / `rtk gh` when compact output is useful.
-- Before reading issues or creating a PR, run `gh auth status`. If GitHub CLI is not authenticated, stop and tell the user to run `gh auth login`.
-- If the repository cannot be inferred from the current git remote, ask the user for `owner/name` or a full GitHub issue URL.
+- Перед issue/PR: `gh auth status`; если не авторизован — попроси `gh auth login`.
+- Если repo не определяется по remote — попроси `owner/name` или полный URL issue.
 - Omit AI-agent references in commits and PRs.
 
 # GitHub issue handling
 
-If an issue is provided and `gh` is authenticated, fetch it with:
-
-```bash
-gh issue view <issue-or-url> --json number,title,body,state,labels,assignees,comments,url
-```
-
-Use `issue-number-short-title` for branch naming when sensible (for example `123-fix-login-timeout`). Include `Closes #123` or `Fixes #123` in the PR body only when the PR fully resolves the issue; otherwise use `Refs #123`.
+Если передан issue и `gh` авторизован — получи контекст через `gh issue view <issue-or-url> --json number,title,body,state,labels,assignees,comments,url`.
+Для ветки используй формат `issue-number-short-title` (напр. `123-fix-login-timeout`).
+В PR: `Closes/Fixes #123` только при полном закрытии, иначе `Refs #123`.
 
 # Commit Message Guidelines
 

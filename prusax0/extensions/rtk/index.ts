@@ -3,12 +3,27 @@ import { createLocalBashOperations, type ExtensionAPI } from "@mariozechner/pi-c
 const RTK_GUIDANCE = `
 RTK token-saving integration is active.
 - Bash commands are transparently rewritten through \`rtk rewrite\` before execution when RTK supports them (for example: \`git status\`, \`ls\`, \`grep\`, \`find\`, \`cat\`, test/lint/build commands, docker/kubectl/aws/gh, etc.).
-- Prefer Bash/RTK commands for high-output inspection and diagnostics so the model receives compact output: \`rtk read <file>\`, \`rtk grep <pattern> <path>\`, \`rtk find ...\`, \`rtk git diff\`, \`rtk test <cmd>\`, \`rtk err <cmd>\`, \`rtk json <file>\`, \`rtk smart <file>\`.
+- Prefer Bash/RTK commands for high-output inspection and diagnostics so the model receives compact output: \`rtk read <file>\`, \`rtk grep <pattern> <path>\`, \`rtk find ...\` (simple queries only), \`rtk git diff\`, \`rtk test <cmd>\`, \`rtk err <cmd>\`, \`rtk json <file>\`, \`rtk smart <file>\`.
+- For native \`find\` compound logic/predicates (for example \`-prune\`, \`-o\`, \`-not\`, \`-exec\`, \`-path\`), use raw \`find\` with \`RTK_DISABLE=1\` or \`# rtk:off\`.
+- For complex/GNU-specific \`grep\` combinations (for example \`-R/-r\`, \`--include/--exclude*\`, \`-A/-B/-C\`, \`-m\`, \`-P\`, \`-z\`), use raw \`grep\` with \`RTK_DISABLE=1\` or \`# rtk:off\`.
 - Pi built-in \`read\`, \`grep\`, \`find\`, and \`ls\` tools bypass shell rewriting; use them when exact Pi behavior is needed, but use Bash/RTK when compact output is preferable.
 - Use Pi \`edit\`/\`write\` for file mutations; use RTK mainly for read-only or command-output-heavy workflows.
 - If exact raw command output is required, prefix the command with \`RTK_DISABLE=1\` or include \`# rtk:off\` in the shell command.
 - RTK token-savings analytics are available via \`rtk gain\` and Pi command \`/rtk gain\`.
 `;
+
+function needsRawFind(command: string): boolean {
+	const hasFind = /(^|[;&|]\s*)find(\s|$)/.test(command);
+	if (!hasFind) return false;
+	if (command.includes("\\(") || command.includes("\\)")) return true;
+	return /(^|\s)(-prune|-o|-not|-exec|-path)(\s|$)/.test(command);
+}
+
+function needsRawGrep(command: string): boolean {
+	const hasGrep = /(^|[;&|]\s*)grep(\s|$)/.test(command);
+	if (!hasGrep) return false;
+	return /(^|\s)(-R|-r|-P|-z|-Z|-o|-q|--null|--line-buffered|--files-with-matches|--files-without-match|--include(?:=|\s)|--exclude(?:=|\s)|--exclude-dir(?:=|\s)|--binary-files(?:=|\s)|--devices(?:=|\s)|--directories(?:=|\s)|--max-count(?:=|\s)|-m\d*|-A\d*|-B\d*|-C\d*)(\s|$)/.test(command);
+}
 
 function shouldSkip(command: string): boolean {
 	const trimmed = command.trim();
@@ -16,7 +31,9 @@ function shouldSkip(command: string): boolean {
 		trimmed.length === 0 ||
 		trimmed.includes("RTK_DISABLE=1") ||
 		trimmed.includes("# rtk:off") ||
-		trimmed.includes("# rtk:raw")
+		trimmed.includes("# rtk:raw") ||
+		needsRawFind(trimmed) ||
+		needsRawGrep(trimmed)
 	);
 }
 

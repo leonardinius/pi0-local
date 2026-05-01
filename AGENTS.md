@@ -4,7 +4,7 @@
 
 **Subagent execution rules:** Route pipeline steps by role name (`Architect` → `architect`, `Coder` → `coder`, `Refactorer` → `refactorer`, `Reviewer` → `reviewer`). The parent/orchestrator owns plan progress edits. Do not run mutation-capable subagents in parallel in the same worktree; this setup does not create git worktrees automatically.
 
-**RTK note:** Use RTK by default for compact output, including routine `git status`/`git diff` summaries. Fall back to `RTK_DISABLE=1 <command>` or `# rtk:off` only when exact raw/uncompressed behavior matters: native `find` compound predicates/actions (`-o`, `-not`, `-exec`, `-print`), flag-heavy GNU `grep` forms, or raw patch output for apply/copy.
+**RTK note:** Use RTK by default for compact output, including routine `git status`/`git diff` summaries. Fall back to `RTK_DISABLE=1 <command>` or `# rtk:off` only when exact raw/uncompressed behavior matters: native `find` compound predicates/actions (`-prune`, `-o`, `-not`, `-exec`, `-path`, `-print`), flag-heavy GNU `grep` forms, or raw patch output for apply/copy.
 
 ## Collaboration Approach
 

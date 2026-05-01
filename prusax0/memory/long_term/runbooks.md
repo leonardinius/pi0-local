@@ -197,3 +197,32 @@ Logs & signals
 - `curl https://api.telegram.org/bot$BOT_TOKEN/getMe`
 
 ---
+
+## pi-telegram /tgreload tmux Fallback Controls
+
+> **Added**: 2026-05-01
+> **Tags**: pi, telegram, tgreload, tmux, env
+
+When reload routing is flaky, use/keep tmux fallback enabled in `pi-telegram`: after smoke test it sends reload via `tmux send-keys`.
+- Target override: `PI_TELEGRAM_TMUX_TARGET` (default `work-pi:0.0`)
+- Command override: `PI_TELEGRAM_TMUX_RELOAD_CMD` (default `/telegram-tgreload-now`)
+- Expected Telegram signal: `tgreload: tmux reload ok` (or `failed` with error)
+
+Quick checks: verify target pane exists (`tmux ls`), and confirm single active polling owner before testing `/tgreload`.
+
+---
+
+## Pi Telegram Projects Publish Model (Shared Tunnel)
+
+> **Added**: 2026-05-01
+> **Tags**: telegram, projects, publish, env, cloudflare, caddy
+
+Current model uses shared tunnel + per-app hostnames.
+- Base domain source: `PI_PROJECTS_PUBLIC_BASE_URL` or `~/.pi/agent/projects.json` (`publicBaseUrl`)
+- Publish state: `<project>/.expose.yml` (`enabled: true|false`)
+- URL format: `https://<app>-<base>/`
+- App auth/source vars in `.env`: `APP_PUBLIC_URL` (optional override), `APP_BASIC_AUTH_USER`, `APP_BASIC_AUTH_PASS`
+
+Validation pattern for published apps: `no auth -> 401`, `with auth -> 200` on public URL.
+
+---

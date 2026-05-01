@@ -3,10 +3,7 @@ argument-hint: GitHub issue URL/number, spec path, or description
 tags: plan
 ---
 
-If `$ARGUMENTS` looks like a GitHub issue URL or issue number/reference:
-- Prefer `gh issue view <issue-or-url> --json number,title,body,state,labels,assignees,comments,url` from the target repo.
-- First run `gh auth status`; if GitHub CLI is not authenticated or the repo cannot be inferred, ask the user to authenticate with `gh auth login`, provide the repo (`owner/name`), or paste the issue context.
-- Treat fetched GitHub issue content as context to verify, not as complete requirements.
+Если в `$ARGUMENTS` есть GitHub issue (URL/номер) — подтяни его через `gh issue view ...` после `gh auth status` и используй как контекст.
 
 Interview the user directly about:
 - Architecture, component boundaries, DB/store choice

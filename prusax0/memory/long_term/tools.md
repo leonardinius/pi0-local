@@ -32,12 +32,12 @@ pi --no-session --tools subagent -p 'Use the subagent tool in parallel mode with
 ## Pi RTK Integration Extension
 
 > **Added**: 2026-04-26
-> **Updated**: 2026-04-26
+> **Updated**: 2026-05-01
 > **Tags**: pi, rtk, token-savings, extension
 
 RTK (`rtk-ai/rtk`) is installed via Homebrew at `/opt/homebrew/bin/rtk`. Pi auto-loads `~/.pi/agent/prusax0/extensions/rtk`, configured in `~/.pi/agent/settings.json`.
 
-The extension intercepts Pi `bash` tool calls and user `!` bash via `rtk rewrite`, defaults rewritten RTK commands to `--ultra-compact`, and injects system guidance to prefer RTK for high-output inspection (`rtk read`, `rtk grep`, `rtk find`, `rtk git diff`, `rtk test`, `rtk err`). Opt out per command with `RTK_DISABLE=1` or `# rtk:off`; opt out of ultra-compact with `PI_RTK_ULTRA=0`.
+The extension intercepts Pi `bash` tool calls and user `!` bash via `rtk rewrite`, defaults rewritten RTK commands to `--ultra-compact`, and injects system guidance to prefer RTK for high-output inspection (`rtk read`, `rtk grep`, `rtk find`, `rtk git diff`, `rtk test`, `rtk err`). User preference (2026-05-01): use RTK by default for tests/lint/diagnostics too, to reduce verbose output/token usage; switch to raw only when exact output is required. Opt out per command with `RTK_DISABLE=1` or `# rtk:off`; opt out of ultra-compact with `PI_RTK_ULTRA=0`.
 
 RTK config is materialized at `~/Library/Application Support/rtk/config.toml` on macOS or `~/.config/rtk/config.toml` on Linux; tracking DB defaults to `~/.local/share/rtk/history.db`. Tracking is enabled, telemetry disabled. Check savings with `rtk gain` or Pi `/rtk gain`.
 
@@ -147,5 +147,25 @@ When different repos require different GitHub keys, map per-repo SSH host aliase
 - `github.com-leonardinius-pi0-local` → `~/.ssh/id_ed25519_pi0_local`
 
 Then set remotes explicitly (example): `git remote set-url origin git@github.com-leonardinius-pi0-local:leonardinius/pi0-local.git`. Validate with `ssh -T git@<alias>`. Keep only aliases used by current `git remote -v` to avoid confusion.
+
+---
+
+## Pi Extension Command Naming via Directory Entry Point
+
+> **Added**: 2026-05-01
+> **Tags**: pi, extension, commands, workflow
+
+For predictable command naming in Pi extension listings, prefer directory entrypoints: `~/.pi/agent/extensions/<name>/index.ts`. Moving `~/.pi/agent/extensions/btw.ts` to `~/.pi/agent/extensions/btw/index.ts` fixed command display as `btw` in extension lists. Also note extension lists show command names without leading slash.
+
+---
+
+## RTK find Limitations: Use Native find for -prune / Boolean Logic
+
+> **Added**: 2026-05-01
+> **Tags**: rtk, find, prune, troubleshooting, workflow
+
+Verified on `rtk 0.37.2`: `rtk find` is fine for simple queries, but does not support compound predicates/actions (`-prune`, `-o`, `-not`, `-exec` combinations). It can emit: `rtk find does not support compound predicates or actions...`, and some flags like `-path` may be ignored (`unknown flag ... ignored`).
+
+Rule: for exclusion logic and advanced predicates, run native `find` directly (for Pi/RTK wrapper use `RTK_DISABLE=1`), e.g. `RTK_DISABLE=1 find . \( -name .git -o -name node_modules \) -prune -o -type f -print`.
 
 ---
