@@ -136,3 +136,16 @@ git config --global rebase.autoStash true
 ```
 
 ---
+
+## Repo-Specific SSH Host Aliases for Multi-Key Git Push
+
+> **Added**: 2026-05-01
+> **Tags**: ssh, git, workflow, keys
+
+When different repos require different GitHub keys, map per-repo SSH host aliases in `~/.ssh/config` and point each repo remote to its alias. Working setup:
+- `github.com-pi-telegram-deploy` → `~/.ssh/github_deploy_key`
+- `github.com-leonardinius-pi0-local` → `~/.ssh/id_ed25519_pi0_local`
+
+Then set remotes explicitly (example): `git remote set-url origin git@github.com-leonardinius-pi0-local:leonardinius/pi0-local.git`. Validate with `ssh -T git@<alias>`. Keep only aliases used by current `git remote -v` to avoid confusion.
+
+---
