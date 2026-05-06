@@ -11,7 +11,6 @@
 - **Plans**: Should NOT live in repo; plans belong in `~/.pi/agent/prusax0/plans/`
 - **Relation to prusax0**: The bridge is an installed pi extension, but developed independently
 
-**Completed work**: `/freemodel` command (see `pi-telegram-freemodel.md` in plans/done)
 
 ---
 

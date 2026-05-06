@@ -1,15 +1,15 @@
-## Pi-Telegram /freemodel Implementation Complete
+## Pi Free Models Extension
 
-> **Added**: 2026-05-01
-> **Updated**: 2026-05-01
-> **Tags**: pi-telegram, freemodel, plan-done, implementation
+> **Added**: 2026-05-06
+> **Tags**: pi, extension, freemodel, cache, summary
 
-Completed `/freemodel` command implementation in `pi-telegram`:
-- **Plan location**: `~/.pi/agent/prusax0/plans/done/20260501224900-pi-telegram-freemodel.md`
-- **Files changed**: `lib/commands.ts`, `lib/freemodel.ts` (new), `lib/menu.ts`, `index.ts`
-- **Features**: `/freemodel` command, free model menu, `freemodel:pick:` callback, fetch/cache from shir-man.com API (1h TTL), error handling (stale cache, empty models)
-- **Tests**: All 351 tests pass
-- **Plan convention**: Plans live under `~/.pi/agent/prusax0/plans/` (not in project repos)
+`~/.pi/agent/extensions/free-models/index.ts` registers `/freemodel` as a standard Pi extension.
+
+Behavior:
+- fetches `https://shir-man.com/api/free-llm/top-models`
+- caches JSON at `~/.pi/agent/prusax0/cache/free-models.json`
+- shows a short summary and recommendations in the editor widget
+- uses the normal Pi extension command flow; no Telegram bridge menu/callbacks
 
 ---
 
