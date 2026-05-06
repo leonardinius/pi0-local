@@ -7,25 +7,22 @@ Entry format: use a level-2 heading (for example, `## Descriptive Title`), metad
 
 ---
 
-## Pi OpenAI Subagent Extension Setup
+## Pi/OpenAI Subagent Extension Setup
 
 > **Added**: 2026-04-26
-> **Updated**: 2026-04-26
-> **Tags**: pi, subagents, openai, workflow
+> **Updated**: 2026-05-01
+> **Tags**: pi, subagents, openai, workflow, paths
 
-Pi core has no built-in subagents, but the example extension is installed at `~/.pi/agent/prusax0/extensions/subagent` and loaded via `settings.json`:
+Pi core has no built-in subagents, but the example extension is installed at `~/.pi/agent/prusax0/extensions/subagent` and loaded via `settings.json`.
 
-```json
-"extensions": ["prusax0/extensions/subagent"]
-```
+**Important paths**:
+- `~/.pi/agent/prusax0/` — main working area (agents, plans, memory, scripts, extensions)
+- `~/pi-telegram/` or `/home/agent/work/pi-telegram/` — separate bridge project (not part of prusax0 workspace)
+- Agent definitions: `~/.pi/agent/prusax0/agents/*.md`
+- Plans: `~/.pi/agent/prusax0/plans/{doing,done,abandoned}/`
+- Memory: `~/.pi/agent/prusax0/memory/{short_term,long_term}/`
 
-Agent definitions live in `~/.pi/agent/prusax0/agents/*.md`; `agents.ts` is patched to load that directory. OpenAI-specific agents use model strings like `openai-codex/gpt-5.5:low|medium|high|xhigh`. `index.ts` is patched to pass role prompt text to `--append-system-prompt` (not a temp-file path). Useful smoke tests:
-
-```bash
-pi --list-models openai-codex
-pi --no-session --tools subagent -p 'Use subagent agent architect. Task: If your active instructions include "Do not edit files", answer ROLE_PROMPT_OK.'
-pi --no-session --tools subagent -p 'Use the subagent tool in parallel mode with scout and advisor tasks.'
-```
+OpenAI-specific agents use model strings like `openai-codex/gpt-5.5:low|medium|high|xhigh`.
 
 ---
 
