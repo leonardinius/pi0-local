@@ -61,3 +61,17 @@ Result: `/tgreload` стабильно проходит: `smoke test passed; rel
 Paths: `~/.npm-global/lib/node_modules/@llblab/pi-telegram/lib/runtime.ts` (runPiPingSmokeTest).
 
 ---
+
+## Voice Requests Should Be Treated as Normal User Input
+
+> **Added**: 2026-05-09
+> **Tags**: pi, telegram, voice, prompt, ux
+
+Verified voice UX rule for `pi-telegram`:
+- Telegram-visible voice text stays plain, with no `voice:` prefix or extra labels.
+- The same transcript is passed to the prompt as normal user content.
+- A short prompt hint like `User request: <transcript>` works better than a confirmation-style reply such as `Понял.`.
+- `tests/turns.test.ts` was updated for this behavior and passed.
+- Full `npm test -- --test tests/turns.test.ts` still had unrelated timeouts in `tests/runtime.test.ts` (media-group/reaction paths).
+
+---

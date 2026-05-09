@@ -8,7 +8,7 @@ Long-term memory is a lightweight set of markdown files under `~/.pi/agent/prusa
 ## Files
 
 - `runbooks.md`
-- `investigations.md`
+- `investigations.md` — includes voice-request prompt/UX finding
 - `patterns.md`
 - `services.md`
 - `tools.md`
