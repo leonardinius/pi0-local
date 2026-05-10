@@ -7,6 +7,28 @@ Entry format: use a level-2 heading (for example, `## Descriptive Title`), metad
 
 ---
 
+## BTW Overlay Right-Side Rendering Fix
+
+> **Added**: 2026-05-10
+> **Updated**: 2026-05-10
+> **Tags**: pi, extension, tui, rendering, btw
+
+`~/.pi/agent/extensions/btw/index.ts` had an internal width clamp in `BtwOverlay.render()` (`Math.min(width, Math.floor(width * 0.9))`) that created an empty right-side area. Fixing the dialog to use the full available width removed the gap; `overlayOptions` margins alone were not enough.
+
+Pattern: if BTW keeps a left air gap but leaves an unwanted right gap, check for an internal width clamp before changing margins.
+
+---
+
+## Insights Output Should Be Actionable
+
+> **Added**: 2026-05-10
+> **Updated**:
+> **Tags**: pi, memory, insights, prompts, workflow
+
+`/insights` reports are more useful when they require directly usable output: commands to run, concrete edit instructions, or explicit decisions. The prompt contract was tightened to favor actionable recommendations and next actions instead of descriptive advice.
+
+---
+
 ## Pi OpenAI Subagent Configuration Review Gaps
 
 > **Added**: 2026-04-26

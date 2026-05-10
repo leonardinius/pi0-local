@@ -1,7 +1,7 @@
 # Knowledge Cache Index
 
 > **Last updated**: 2026-05-10
-> **Total entries**: 47
+> **Total entries**: 49
 
 Long-term memory is a lightweight set of markdown files under `~/.pi/agent/prusax0/memory/long_term/`.
 
