@@ -29,7 +29,8 @@ The goal is knowledge gathering — about GoCardless, its internal processes, an
 2-tier memory system at `~/.pi/agent/prusax0/memory`:
 - **short_term/**: Session snapshots saved manually via `/checkpoint`; the memory extension also writes automatic short-term checkpoints on Pi `session_compact` events.
 - **long_term/**: Persisted markdown knowledge files plus an index. Long-term promotion should be manual/milestone-based, not aggressive during normal conversation.
-- **automatic recall**: `prusax0/extensions/memory` may append up to 2 matching long-term blocks (max 5000 chars, minimum score threshold) to the system prompt before an agent starts. Disable with `PI_MEMORY_RECALL=0` when needed.
+- **archive/**: Cold-storage holding area at `memory/archive/` for reviewed rejected or unpromoted drafts. It is not automatic recall input, not `/save` input, and not `/insights` input. It stays separate from `short_term/`, `long_term/`, and `_insights/`.
+- **automatic recall**: `prusax0/extensions/memory` may append up to 2 matching long-term blocks (max 5000 chars, minimum score threshold) to the system prompt before an agent starts. It reads `long_term/` only; `archive/` is excluded. Disable with `PI_MEMORY_RECALL=0` when needed.
 - **automatic compaction**: `prusax0/extensions/memory` listens for `session_compact` and writes `short_term/auto_compact_*.md`. These files are drafts; review/promote with `/save` rather than treating them as verified long-term memory.
 
 ### Manual / Milestone Saves
@@ -50,6 +51,11 @@ When saving, keep it lightweight: dedup first, append/update a concise entry in 
 2. If the task produced reusable knowledge, ask/confirm before saving unless the user already requested memory persistence.
 3. If confirmed: run the Dedup Protocol, append/update the chosen long-term file, and update `_index.md`.
 4. Only cache completed, verified knowledge — not failed attempts, transient session details, or trivial lookups.
+
+**In-session Insights Nudge**:
+- After a notable milestone or friction point, you may add a single soft optional `/insights` nudge, e.g. “If useful, run `/insights` later to turn recent checkpoints into recommendations.”
+- Keep it best-effort, in-session only: do not run `/insights` automatically, do not write reports unless the user explicitly invokes `/insights write`, and skip the nudge for routine/trivial work or when it would feel noisy.
+- Do not add hooks, daemons, timers, or persistent reminder state. Do not repeat it every turn.
 
 ### Dedup Protocol (before every save)
 
@@ -84,4 +90,10 @@ On create: set `Added` only, leave `Updated` blank. On update: keep original `Ad
 2. **During work**: Do not aggressively write long-term memory. Keep findings in-session unless a milestone is reached and the user confirms they should be remembered.
 3. **Before context compaction**: If context is getting long, run `/checkpoint` manually when useful. The memory extension also creates short-term checkpoints automatically on Pi `session_compact` events.
 4. **On /checkpoint**: Save a lightweight session snapshot to `short_term/`; do not promote to long-term unless the user confirms.
-5. **On /save**: Review `short_term/` files, promote only completed/verified/reusable knowledge to long-term memory, update `_index.md`, then clean promoted short-term files.
+5. **On /save**: Review `short_term/` files only, promote only completed/verified/reusable knowledge to long-term memory, update `_index.md`, then clean promoted short-term files. Move reviewed and explicitly skipped/rejected short-term drafts to `archive/`; leave unreviewed leftovers in `short_term/` and report them. Do not auto-archive unreviewed drafts, and do not treat `archive/` as `/save` input.
+
+### Archive Storage Format
+- `memory/archive/` uses a flat direct-child file layout for retained drafts; do not create topic/date subdirectories unless a future plan explicitly changes the format.
+- Preserve provenance in archived filenames: `YYYYMMDD_HHMMSSZ__{original-short-term-filename}`. The timestamp is the UTC archive time; the suffix is the original short-term basename.
+- Retained archive drafts are cold storage, not a long-term store; leave file contents unchanged unless the user explicitly requests cleanup.
+- Manual cleanup only: delete or reorganize archive files only after an explicit user request. No runtime auto-archiving, auto-expiry, hooks, daemons, timers, or persistent cleanup state.

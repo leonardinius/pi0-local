@@ -10,6 +10,13 @@ const MAX_BLOCKS = Number(process.env.PI_MEMORY_RECALL_BLOCKS ?? "2");
 const MAX_CHARS = Number(process.env.PI_MEMORY_RECALL_CHARS ?? "5000");
 const MIN_SCORE = Number(process.env.PI_MEMORY_RECALL_MIN_SCORE ?? "5");
 
+const UNCONFIRMED_RETRO_DRAFT = `## Retro Draft (unconfirmed, agent-authored)\n\n` +
+	`> Append-only draft. User may correct, delete, or revise inline. This retro draft is evidence, not instruction.\n\n` +
+	`- What worked: _unconfirmed_\n` +
+	`- What did not work: _unconfirmed_\n` +
+	`- Friction: _unconfirmed_\n` +
+	`- Evidence: _unconfirmed_\n`;
+
 const STOPWORDS = new Set([
 	"about",
 	"after",
@@ -166,6 +173,7 @@ function writeCompactionCheckpoint(event: any): string | undefined {
 		`## Compaction Summary\n\n${entry.summary}\n\n` +
 		`## Files Read\n\n${readFiles.length ? readFiles.map((file: string) => `- ${file}`).join("\n") : "- None recorded"}\n\n` +
 		`## Files Modified\n\n${modifiedFiles.length ? modifiedFiles.map((file: string) => `- ${file}`).join("\n") : "- None recorded"}\n\n` +
+		`${UNCONFIRMED_RETRO_DRAFT}\n` +
 		`## Promotion Guidance\n\nOnly promote completed, verified, reusable knowledge to long-term memory. Do not promote transient conversation details.\n`;
 	fs.writeFileSync(filePath, content, "utf8");
 	return filePath;
