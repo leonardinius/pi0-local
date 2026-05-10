@@ -271,7 +271,7 @@ class BtwOverlay extends Container implements Focusable {
 	}
 
 	override render(width: number): string[] {
-		const dialogWidth = Math.max(56, Math.min(width, Math.floor(width * 0.9)));
+		const dialogWidth = Math.max(56, width);
 		const innerWidth = Math.max(40, dialogWidth - 2);
 		const terminalRows = process.stdout.rows ?? 30;
 		const dialogHeight = Math.max(16, Math.min(30, Math.floor(terminalRows * 0.75)));
@@ -306,9 +306,7 @@ class BtwOverlay extends Container implements Focusable {
 
 		lines.push(this.theme.fg("borderMuted", `├${"─".repeat(innerWidth)}┤`));
 		lines.push(this.frameLine(this.theme.fg("warning", status), innerWidth));
-		lines.push(
-			`${this.theme.fg("borderMuted", "│")}${inputLine}${this.theme.fg("borderMuted", "│")}`,
-		);
+		lines.push(this.frameLine(inputLine, innerWidth));
 		lines.push(this.frameLine(this.theme.fg("dim", "Enter submit · Esc close"), innerWidth));
 		lines.push(this.borderLine(innerWidth, "bottom"));
 
@@ -714,7 +712,7 @@ export default function (pi: ExtensionAPI) {
 						minWidth: 72,
 						maxHeight: "78%",
 						anchor: "top-center",
-						margin: { top: 1, left: 2, right: 2 },
+						margin: { top: 1, left: 2, right: 0 },
 					},
 					onHandle: (handle) => {
 						runtime.handle = handle;
