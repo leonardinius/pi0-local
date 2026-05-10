@@ -6,19 +6,22 @@ Entry format: use a level-2 heading (for example, `## Descriptive Title`), metad
 
 ---
 
-## Insights Flow Should Stay Prompt-Driven Unless Runtime Is Explicitly Added
+## Archive Should Stay Cold Storage, Not Recall Input
 
 > **Added**: 2026-05-10
 > **Updated**:
-> **Tags**: pi, insights, memory, prompts, workflow
+> **Tags**: pi, memory, archive, save, insights
 
-The `/insights` work can be safely split into prompt/template surfaces before any runtime command exists. In this case, the plan completed with:
-- `prompts/insights.md` defining read-only analysis and optional `write`
-- `prompts/checkpoint.md` adding append-only unconfirmed retro drafts
-- `prompts/save.md` explicitly ignoring `memory/_insights/`
-- `memory/_insights/.gitignore` keeping reports out of git
-- `AGENTS.md` carrying the soft in-session nudge rule
+For Pi memory, keep `memory/archive/` as cold storage for reviewed rejected or unpromoted drafts only. It should stay separate from `short_term/`, `long_term/`, and `_insights/`, and it should not be used as recall input or as `/save` or `/insights` input. Archive cleanup should be manual and provenance-preserving.
 
-That is useful when rollback needs to be simple and the runtime command can wait for a later step.
+---
+
+## Break Long Plans Into Explicit Milestones
+
+> **Added**: 2026-05-10
+> **Updated**:
+> **Tags**: planning, milestones, checkpoints, memory
+
+Long plans are easier to execute and review when split into small milestones. Each milestone should be finishable, checkable, and summarized with what worked, what did not work, friction, and evidence. This makes plan progress, checkpoints, and promotion decisions more reliable.
 
 ---
