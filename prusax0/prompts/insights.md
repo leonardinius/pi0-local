@@ -64,9 +64,15 @@ Summarize repeated friction, delays, ambiguity, tool issues, or coordination ove
 
 ## Recommendations
 Give concise, actionable recommendations grounded in the sources.
+Each recommendation must be directly usable: either a command to run, a concrete edit to make, or an explicit instruction to ask the agent to do it.
 
 ## Next actions
-List the smallest practical next steps. If a human decision is needed, say so.
+List the smallest practical next steps as verbs the user can act on now.
+Prefer this shape:
+- `Run <command>`
+- `Ask the agent to <change>`
+- `Decide: <one specific choice>`
+If a human decision is needed, state the decision and the exact follow-up.
 
 ## Short redacted evidence snippets
 Quote short redacted snippets only. Include filename next to each snippet.
