@@ -22,10 +22,20 @@ Pattern: if BTW keeps a left air gap but leaves an unwanted right gap, check for
 ## Insights Output Should Be Actionable
 
 > **Added**: 2026-05-10
-> **Updated**:
+> **Updated**: 2026-05-10
 > **Tags**: pi, memory, insights, prompts, workflow
 
 `/insights` reports are more useful when they require directly usable output: commands to run, concrete edit instructions, or explicit decisions. The prompt contract was tightened to favor actionable recommendations and next actions instead of descriptive advice.
+
+---
+
+## OpenAI Codex Usage Dashboard URL
+
+> **Added**: 2026-05-10
+> **Updated**: 2026-05-10
+> **Tags**: openai, codex, usage, subscription, dashboard
+
+For OpenAI Plus / Codex usage tracking, use `https://chatgpt.com/codex/settings/usage` as the first place to check usage/limits before assuming the CLI/API is the only source.
 
 ---
 
