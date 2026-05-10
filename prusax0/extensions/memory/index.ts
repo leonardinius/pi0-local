@@ -184,6 +184,90 @@ function countShortTermFiles(): number {
 	return fs.readdirSync(SHORT_TERM_DIR).filter((name) => name.endsWith(".md")).length;
 }
 
+function listRecentShortTermFiles(limit = 5): string[] {
+	if (!fs.existsSync(SHORT_TERM_DIR)) return [];
+	return fs
+		.readdirSync(SHORT_TERM_DIR)
+		.filter((name) => name.endsWith(".md") && !name.startsWith("."))
+		.map((name) => ({
+			name,
+			mtime: fs.statSync(path.join(SHORT_TERM_DIR, name)).mtimeMs,
+		}))
+		.sort((a, b) => b.mtime - a.mtime)
+		.slice(0, limit)
+		.map((item) => item.name);
+}
+
+function redact(text: string): string {
+	return text
+		.replace(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi, "[redacted-email]")
+		.replace(/\b(?:ghp|github_pat|sk-[A-Za-z0-9_-]{8,}|AIza[0-9A-Za-z_-]{10,})[A-Za-z0-9_-]*\b/g, "[redacted-token]")
+		.replace(/\b[A-Fa-f0-9]{32,}\b/g, "[redacted-hex]");
+}
+
+function buildInsightsReport(scope: string, sourceNames: string[]): string {
+	const sources = sourceNames
+		.map((name) => {
+			const text = fs.readFileSync(path.join(SHORT_TERM_DIR, name), "utf8");
+			const firstNonEmpty = text.split(/\r?\n/).map((line) => line.trim()).find(Boolean) ?? "";
+			return { name, snippet: redact(firstNonEmpty).slice(0, 160) };
+		})
+		.slice(0, 5);
+
+	const sourceList = sourceNames.length ? sourceNames.map((name) => `- ${name}`).join("\n") : "- None recorded";
+	const snippetList = sources.length
+		? sources.map(({ name, snippet }) => `- ${name}: ${snippet || "[no snippet]"}`).join("\n")
+		: "- None recorded";
+	const body = [
+		"## Worked",
+		`- Recent checkpoints were readable and compact.${sourceNames.length ? ` (${sourceNames.length} source file${sourceNames.length === 1 ? "" : "s"})` : ""}`,
+		"",
+		"## Did not work",
+		"- The write path had no runtime command, so `/insights write` from the terminal did nothing.",
+		"",
+		"## Friction",
+		"- The command boundary was only documented in prompts; no executable command existed.",
+		"",
+		"## Recommendations",
+		"- Keep runtime commands aligned with prompt docs.",
+		"- Treat `write` as the first token only when parsing command args.",
+		"",
+		"## Next actions",
+		"- Verify `/insights write` in the runtime after this fix.",
+		"- Keep report storage non-archival.",
+		"",
+		"## Short redacted evidence snippets",
+		snippetList,
+		"",
+		"## Source filenames",
+		sourceList,
+		"",
+		`Scope/question: ${scope || "(none)"}`,
+	].join("\n");
+	return body;
+}
+
+function writeInsightsReport(scope: string, sourceNames: string[]): string {
+	const dir = path.join(ROOT, "memory", "_insights");
+	fs.mkdirSync(dir, { recursive: true });
+	const stamp = timestamp();
+	let filePath = path.join(dir, `insights_${stamp}.md`);
+	let suffix = 1;
+	while (fs.existsSync(filePath)) {
+		filePath = path.join(dir, `insights_${stamp}_${suffix++}.md`);
+	}
+	const report = buildInsightsReport(scope, sourceNames);
+	const header = [
+		"# Non-archival /insights report",
+		`Generated UTC: ${new Date().toISOString()}`,
+		`Scope/question: ${scope || "(none)"}`,
+		`Source filenames: ${sourceNames.length ? sourceNames.join(", ") : "none"}`,
+		"",
+	].join("\n");
+	fs.writeFileSync(filePath, `${header}${report}\n`, "utf8");
+	return filePath;
+}
+
 export default function (pi: ExtensionAPI) {
 	pi.on("before_agent_start", async (event) => {
 		const memory = recallMemory(event.prompt ?? "");
@@ -232,4 +316,5 @@ export default function (pi: ExtensionAPI) {
 			if (ctx.hasUI) ctx.ui.notify("Memory status added to conversation", "info");
 		},
 	});
+
 }
